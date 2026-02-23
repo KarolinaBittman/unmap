@@ -25,7 +25,7 @@ export default function QuestionCard({ question, answer, onChange, onNext }) {
       {/* Question header */}
       <div className="p-7 pb-5">
         <p className="text-[11px] font-semibold text-brand-primary uppercase tracking-widest mb-3">
-          Question {question.step} of 5
+          {question.label ?? `Question ${question.step} of 5`}
         </p>
         <h2 className="font-heading font-bold text-[1.4rem] leading-snug text-brand-text">
           {question.question}
@@ -80,8 +80,8 @@ export default function QuestionCard({ question, answer, onChange, onNext }) {
                 className="w-full h-2 rounded-full accent-[#7C6BAE] cursor-pointer"
               />
               <div className="flex justify-between text-xs text-brand-muted">
-                <span>Not at all</span>
-                <span>Completely</span>
+                <span>{question.minLabel ?? 'Not at all'}</span>
+                <span>{question.maxLabel ?? 'Completely'}</span>
               </div>
             </div>
             <button

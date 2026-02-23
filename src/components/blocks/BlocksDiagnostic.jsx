@@ -1,68 +1,76 @@
 import { useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
-import QuestionCard from './QuestionCard'
-import ReflectionCard from './ReflectionCard'
+import QuestionCard from '@/components/onboarding/QuestionCard'
+import BlocksReflectionCard from './BlocksReflectionCard'
 import { useUserStore } from '@/store/userStore'
-import { generateOnboardingReflection } from '@/lib/claude'
+import { generateBlocksReflection } from '@/lib/claude'
 
 const QUESTIONS = [
   {
-    id: 'reason',
+    id: 'blocker',
     step: 1,
-    question: 'What brought you here today?',
+    label: 'Stage 2 · Question 1 of 5',
+    question: "When you imagine making a big change, what's the first thing that stops you?",
     type: 'pills',
-    options: ['A big life change', 'Feeling stuck', 'Wanting more', 'Starting fresh'],
+    options: [
+      'Fear of failure',
+      'Not enough money',
+      "Don't know where to start",
+      'What will people think',
+      "I'm not ready yet",
+      'Other',
+    ],
   },
   {
-    id: 'satisfaction',
+    id: 'duration',
     step: 2,
-    question: 'How satisfied are you with your life right now?',
-    subtitle: 'Be honest — this is just for you.',
-    type: 'slider',
-    min: 1,
-    max: 10,
+    label: 'Stage 2 · Question 2 of 5',
+    question: 'How long have you felt stuck in this area?',
+    type: 'pills',
+    options: ['A few months', 'About a year', 'A few years', 'Most of my life'],
   },
   {
-    id: 'stuckArea',
+    id: 'pastAttempts',
     step: 3,
-    question: 'Which area feels most stuck?',
-    subtitle: 'Select all that apply.',
-    type: 'multi-pills',
-    options: ['Career', 'Relationships', 'Money', 'Health', 'Purpose', 'Freedom'],
-  },
-  {
-    id: 'freedom',
-    step: 4,
-    question: 'What does freedom mean to you?',
-    subtitle: "There's no wrong answer.",
+    label: 'Stage 2 · Question 3 of 5',
+    question: 'Have you tried to change this before? What happened?',
+    subtitle: 'Be as specific as you like — or as brief.',
     type: 'text',
     placeholder: 'Write freely — even a sentence is enough…',
   },
   {
-    id: 'readiness',
+    id: 'innerVoice',
+    step: 4,
+    label: 'Stage 2 · Question 4 of 5',
+    question: 'What does the voice in your head say when you think about going for what you want?',
+    subtitle: 'Write the actual words — exactly as they sound.',
+    type: 'text',
+    placeholder: 'The voice says…',
+  },
+  {
+    id: 'beliefScore',
     step: 5,
-    question: 'How ready are you to make real changes?',
-    type: 'scale',
-    options: [
-      { value: 1, label: 'Just exploring' },
-      { value: 2, label: 'Thinking about it' },
-      { value: 3, label: 'Ready to start' },
-      { value: 4, label: 'Fully committed' },
-      { value: 5, label: 'Already moving' },
-    ],
+    label: 'Stage 2 · Question 5 of 5',
+    question: 'How much do you actually believe you can change?',
+    subtitle: "Be honest. There's no wrong answer.",
+    type: 'slider',
+    min: 1,
+    max: 10,
+    minLabel: 'Not really',
+    maxLabel: 'Fully believe',
   },
 ]
 
 const INITIAL_ANSWERS = {
-  reason: '',
-  satisfaction: 5,
-  stuckArea: [],
-  freedom: '',
-  readiness: 0,
+  blocker: '',
+  duration: '',
+  pastAttempts: '',
+  innerVoice: '',
+  beliefScore: 5,
 }
 
-export default function OnboardingFlow() {
+export default function BlocksDiagnostic() {
   const [step, setStep] = useState(0)
   const [answers, setAnswers] = useState(INITIAL_ANSWERS)
   const [visible, setVisible] = useState(true)
@@ -71,11 +79,9 @@ export default function OnboardingFlow() {
   const [reflectionError, setReflectionError] = useState(null)
 
   const navigate = useNavigate()
-  const { profile, setProfile, setOnboardingAnswers } = useUserStore()
+  const { setBlocksAnswers, profile, setProfile } = useUserStore()
 
-  // Ref always holds the latest answers — avoids stale closures inside
-  // setTimeout-chained callbacks (animateAndRun + QuestionCard's auto-advance).
-  // Assigned directly on every render (no useEffect needed).
+  // Ref always holds the latest answers — avoids stale closures in async callbacks
   const latestAnswers = useRef(answers)
   latestAnswers.current = answers
 
@@ -95,10 +101,9 @@ export default function OnboardingFlow() {
     setReflectionLoading(true)
     setReflectionError(null)
     try {
-      // latestAnswers.current is always up-to-date by this point
-      const text = await generateOnboardingReflection(latestAnswers.current)
+      const text = await generateBlocksReflection(latestAnswers.current)
       setReflection(text)
-    } catch (err) {
+    } catch {
       setReflectionError('Something went wrong. Please try again.')
     } finally {
       setReflectionLoading(false)
@@ -109,9 +114,8 @@ export default function OnboardingFlow() {
     animateAndRun(() => {
       const nextStep = step + 1
       setStep(nextStep)
-      // Kick off Claude call as soon as we enter the reflection screen
       if (nextStep >= QUESTIONS.length) {
-        setOnboardingAnswers(latestAnswers.current)
+        setBlocksAnswers(latestAnswers.current)
         fetchReflection()
       }
     })
@@ -125,8 +129,8 @@ export default function OnboardingFlow() {
     setAnswers((prev) => ({ ...prev, [id]: value }))
   }
 
-  function handleBegin() {
-    setProfile({ ...profile, onboardingComplete: true })
+  function handleContinue() {
+    setProfile({ ...profile, currentStage: Math.max(profile.currentStage ?? 0, 3) })
     navigate('/')
   }
 
@@ -159,7 +163,6 @@ export default function OnboardingFlow() {
       <main className="flex-1 flex items-start justify-center px-6 pt-6 pb-10">
         <div className="w-full max-w-lg">
 
-          {/* Fade + lift animation between steps */}
           <div
             style={{
               opacity: visible ? 1 : 0,
@@ -168,12 +171,12 @@ export default function OnboardingFlow() {
             }}
           >
             {isReflection ? (
-              <ReflectionCard
+              <BlocksReflectionCard
                 reflection={reflection}
                 loading={reflectionLoading}
                 error={reflectionError}
                 onRetry={fetchReflection}
-                onBegin={handleBegin}
+                onContinue={handleContinue}
               />
             ) : (
               <QuestionCard
@@ -185,7 +188,7 @@ export default function OnboardingFlow() {
             )}
           </div>
 
-          {/* Back button — below card, Q2+ only */}
+          {/* Back button — Q2+ only, not on reflection */}
           {!isReflection && step > 0 && (
             <button
               onClick={goBack}

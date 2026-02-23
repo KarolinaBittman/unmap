@@ -136,6 +136,65 @@
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
+/* ── Wheel of Life range slider ── */
+input[type='range'].wheel-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 9999px;
+  background: var(--track-bg, #E2DFF0);
+  outline: none;
+  cursor: pointer;
+  transition: background 200ms ease;
+}
+
+input[type='range'].wheel-slider::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 9999px;
+  background: var(--track-bg, #E2DFF0);
+}
+
+input[type='range'].wheel-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: white;
+  border: 2.5px solid #7C6BAE;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
+  cursor: grab;
+  margin-top: -8px;
+  transition: transform 100ms ease, box-shadow 100ms ease;
+}
+
+input[type='range'].wheel-slider::-webkit-slider-thumb:active {
+  cursor: grabbing;
+  transform: scale(1.15);
+  box-shadow: 0 2px 10px rgba(124, 107, 174, 0.35);
+}
+
+input[type='range'].wheel-slider::-moz-range-track {
+  height: 6px;
+  border-radius: 9999px;
+  background: var(--track-bg, #E2DFF0);
+}
+
+input[type='range'].wheel-slider::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: white;
+  border: 2.5px solid #7C6BAE;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
+  cursor: grab;
+}
+
+input[type='range'].wheel-slider:focus-visible {
+  outline: none;
+}
+
 .dark {
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
