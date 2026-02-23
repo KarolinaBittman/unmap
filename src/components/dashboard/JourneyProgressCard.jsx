@@ -1,9 +1,8 @@
 import { useUserStore } from '@/store/userStore'
-import { STAGES } from '@/lib/prompts'
+import { STAGE_NAMES } from '@/lib/prompts'
 
 export default function JourneyProgressCard() {
   const { journeyProgress, profile } = useUserStore()
-  const currentStage = STAGES.find((s) => s.id === profile.currentStage)
 
   return (
     <div className="bg-gradient-to-br from-pink-400 via-purple-400 to-purple-600 rounded-2xl p-6 text-white shadow-sm hover:shadow-md transition-all duration-200">
@@ -19,7 +18,7 @@ export default function JourneyProgressCard() {
         </span>
       </div>
       <p className="text-white/80 text-sm mt-2">
-        Stage {profile.currentStage} · {currentStage?.name ?? 'In Progress'}
+        Stage {profile.currentStage} · {STAGE_NAMES[profile.currentStage] ?? 'In Progress'}
       </p>
 
       {/* Progress bar */}

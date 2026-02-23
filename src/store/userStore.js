@@ -47,6 +47,9 @@ export const useUserStore = create(
       // Stage 5 Roadmap answers
       roadmapAnswers: null,
 
+      // Stage 6 World answers
+      worldAnswers: null,
+
       // Conversation history — session only, not persisted
       conversationHistory: [],
 
@@ -71,6 +74,7 @@ export const useUserStore = create(
       setIdentityAnswers: (identityAnswers) => set({ identityAnswers }),
       setPointBAnswers: (pointBAnswers) => set({ pointBAnswers }),
       setRoadmapAnswers: (roadmapAnswers) => set({ roadmapAnswers }),
+      setWorldAnswers: (worldAnswers) => set({ worldAnswers }),
       setJourneyProgress: (journeyProgress) => set({ journeyProgress }),
       setPointBClarity: (pointBClarity) => set({ pointBClarity }),
       addToConversation: (message) =>
@@ -94,6 +98,7 @@ export const useUserStore = create(
           if (data.identityAnswers)   updates.identityAnswers    = data.identityAnswers
           if (data.pointBAnswers)     updates.pointBAnswers      = data.pointBAnswers
           if (data.roadmapAnswers)    updates.roadmapAnswers     = data.roadmapAnswers
+          if (data.worldAnswers)      updates.worldAnswers        = data.worldAnswers
           if (data.checkins?.length)  updates.checkins           = data.checkins
           if (Object.keys(updates).length) set(updates)
         } catch (err) {
@@ -115,6 +120,7 @@ export const useUserStore = create(
         identityAnswers: state.identityAnswers,
         pointBAnswers: state.pointBAnswers,
         roadmapAnswers: state.roadmapAnswers,
+        worldAnswers: state.worldAnswers,
         checkins: state.checkins,
       }),
     },

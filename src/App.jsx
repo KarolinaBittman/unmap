@@ -14,6 +14,7 @@ import CheckInPage from '@/pages/CheckInPage'
 import ResourcesPage from '@/pages/ResourcesPage'
 import PointBPage from '@/pages/PointBPage'
 import RoadmapPage from '@/pages/RoadmapPage'
+import WorldPage from '@/pages/WorldPage'
 
 // Redirects unauthenticated users to /auth.
 // Renders nothing until the session check has resolved (prevents flash).
@@ -70,6 +71,7 @@ export default function App() {
         <Route path="/identity" element={<ProtectedRoute><IdentityPage /></ProtectedRoute>} />
         <Route path="/pointb" element={<ProtectedRoute><PointBPage /></ProtectedRoute>} />
         <Route path="/roadmap" element={<ProtectedRoute><RoadmapPage /></ProtectedRoute>} />
+        <Route path="/world" element={<ProtectedRoute><WorldPage /></ProtectedRoute>} />
         <Route path="/checkin" element={<ProtectedRoute><CheckInPage /></ProtectedRoute>} />
         <Route path="/resources" element={<ProtectedRoute><ResourcesPage /></ProtectedRoute>} />
       </Routes>
