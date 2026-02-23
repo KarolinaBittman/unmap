@@ -1,11 +1,13 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import { loadUserData } from '@/lib/db'
 
 export const useUserStore = create(
   persist(
     (set) => ({
       // Auth — not persisted (managed by auth session)
       user: null,
+      authChecked: false,
 
       // Profile
       profile: {
@@ -39,6 +41,9 @@ export const useUserStore = create(
       // Stage 3 identity answers
       identityAnswers: null,
 
+      // Stage 4 Point B answers
+      pointBAnswers: null,
+
       // Conversation history — session only, not persisted
       conversationHistory: [],
 
@@ -55,11 +60,13 @@ export const useUserStore = create(
 
       // Actions
       setUser: (user) => set({ user }),
+      setAuthChecked: (authChecked) => set({ authChecked }),
       setProfile: (profile) => set({ profile }),
       setWheelScores: (wheelScores) => set({ wheelScores }),
       setOnboardingAnswers: (onboardingAnswers) => set({ onboardingAnswers }),
       setBlocksAnswers: (blocksAnswers) => set({ blocksAnswers }),
       setIdentityAnswers: (identityAnswers) => set({ identityAnswers }),
+      setPointBAnswers: (pointBAnswers) => set({ pointBAnswers }),
       setJourneyProgress: (journeyProgress) => set({ journeyProgress }),
       setPointBClarity: (pointBClarity) => set({ pointBClarity }),
       addToConversation: (message) =>
@@ -68,6 +75,26 @@ export const useUserStore = create(
         })),
       addCheckin: (checkin) =>
         set((state) => ({ checkins: [...state.checkins, checkin] })),
+
+      // Load persisted data from Supabase after sign-in
+      loadFromSupabase: async (userId) => {
+        try {
+          const data = await loadUserData(userId)
+          const updates = {}
+          if (data.profile)           updates.profile            = data.profile
+          if (data.wheelScores)       updates.wheelScores        = data.wheelScores
+          if (data.journeyProgress !== null) updates.journeyProgress = data.journeyProgress
+          if (data.pointBClarity !== null)   updates.pointBClarity   = data.pointBClarity
+          if (data.onboardingAnswers) updates.onboardingAnswers  = data.onboardingAnswers
+          if (data.blocksAnswers)     updates.blocksAnswers      = data.blocksAnswers
+          if (data.identityAnswers)   updates.identityAnswers    = data.identityAnswers
+          if (data.pointBAnswers)     updates.pointBAnswers      = data.pointBAnswers
+          if (data.checkins?.length)  updates.checkins           = data.checkins
+          if (Object.keys(updates).length) set(updates)
+        } catch (err) {
+          console.error('[store] loadFromSupabase error:', err)
+        }
+      },
     }),
     {
       name: 'unmap-store',
@@ -81,6 +108,7 @@ export const useUserStore = create(
         pointBClarity: state.pointBClarity,
         blocksAnswers: state.blocksAnswers,
         identityAnswers: state.identityAnswers,
+        pointBAnswers: state.pointBAnswers,
         checkins: state.checkins,
       }),
     },

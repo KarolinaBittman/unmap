@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { cn } from '@/lib/utils'
 import { useUserStore } from '@/store/userStore'
 import WheelPreview from '@/components/dashboard/WheelPreview'
+import { syncWheelScores } from '@/lib/db'
 
 const AREAS = [
   { id: 'career',        label: 'Career',        hint: 'Work, growth, income, satisfaction' },
@@ -78,7 +79,7 @@ function AreaSlider({ id, score, onScore }) {
 
 export default function WheelOfLifeSetup() {
   const navigate = useNavigate()
-  const { wheelScores, setWheelScores } = useUserStore()
+  const { user, wheelScores, setWheelScores } = useUserStore()
 
   // Seed sliders from the persisted store on first mount.
   // Values >0 mean the area was previously scored; 0/undefined means unscored (null).
@@ -104,6 +105,7 @@ export default function WheelOfLifeSetup() {
       AREAS.map(({ id }) => [id, scores[id] ?? 0]),
     )
     setWheelScores(finalScores)
+    if (user?.id) syncWheelScores(user.id, finalScores)
     navigate('/')
   }
 

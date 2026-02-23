@@ -131,3 +131,45 @@ Write the reflection now.`
 
   return sendMessage(userMessage, systemPrompt)
 }
+
+// Generates a 4-5 sentence Point B reflection: names vision, spots 1yr→3yr gap, calls out uncensored truth.
+export async function generatePointBReflection(answers) {
+  const systemPrompt = `You are Unmap's guide — a warm, perceptive companion helping people redesign their lives.
+
+TASK: Write a 4-5 sentence Point B reflection that does three things in order:
+1. Name their vision concretely — use their exact words from the uncensored section. This is the real thing they want, not the edited version. State it plainly.
+2. Spot the gap between their 1-year and 3-year answers — where did they get bolder? What changed between the two? Name the specific shift.
+3. Call out the uncensored section as what they're actually after — the version underneath all the practicality. Make it clear that the uncensored one is the signal.
+
+TONE RULES:
+- Direct and specific — use their exact words wherever possible
+- Never start with "I"
+- No hedging — no "it seems like", "it sounds as if", "perhaps"
+- The final sentence is a quiet acknowledgement that the uncensored version is the real Point B
+
+FORBIDDEN WORDS: journey, amazing, incredible, awesome, powerful, transformative, healing, trauma, anxiety, resilience, empower, brave, courageous, beautiful, profound, mindset, limiting beliefs, inner child, self-sabotage, wounded, toxic, passion, purpose-driven
+
+OUTPUT FORMAT: 4-5 sentences. Plain text only. No bullet points. No labels. No markdown. No intro phrase.`
+
+  const userMessage = `My Point B answers:
+
+ONE YEAR FROM NOW:
+- Where I'm living: "${answers.year1_living?.trim() || 'I left this blank'}"
+- What a typical Tuesday looks like: "${answers.year1_tuesday?.trim() || 'I left this blank'}"
+- What I'm working on: "${answers.year1_working?.trim() || 'I left this blank'}"
+- How I feel when I wake up: "${answers.year1_feeling?.trim() || 'I left this blank'}"
+
+THREE YEARS FROM NOW:
+- Where I'm living: "${answers.year3_living?.trim() || 'I left this blank'}"
+- What a typical Tuesday looks like: "${answers.year3_tuesday?.trim() || 'I left this blank'}"
+- What I'm working on: "${answers.year3_working?.trim() || 'I left this blank'}"
+- How I feel when I wake up: "${answers.year3_feeling?.trim() || 'I left this blank'}"
+
+UNCENSORED:
+- If I knew I couldn't fail, I'd build or become: "${answers.uncensored_build?.trim() || 'I left this blank'}"
+- The life I want but haven't said out loud: "${answers.uncensored_truth?.trim() || 'I left this blank'}"
+
+Write the reflection now.`
+
+  return sendMessage(userMessage, systemPrompt)
+}

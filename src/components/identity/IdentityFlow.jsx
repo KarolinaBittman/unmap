@@ -7,6 +7,7 @@ import IdentityReflectionCard from './IdentityReflectionCard'
 import QuestionCard from '@/components/onboarding/QuestionCard'
 import { useUserStore } from '@/store/userStore'
 import { generateIdentityReflection } from '@/lib/claude'
+import { syncStageAnswers, syncProfile } from '@/lib/db'
 
 // Step 0           = ValuesPicker (pick top 5)
 // Steps 1–10       = QUESTIONS[step - 1]
@@ -134,7 +135,7 @@ export default function IdentityFlow() {
   const [reflectionError, setReflectionError] = useState(null)
 
   const navigate = useNavigate()
-  const { profile, setProfile, setIdentityAnswers } = useUserStore()
+  const { user, profile, setProfile, setIdentityAnswers } = useUserStore()
 
   // Ref always holds the latest answers — avoids stale closures in async callbacks
   const latestAnswers = useRef(answers)
@@ -172,6 +173,7 @@ export default function IdentityFlow() {
       setStep(nextStep)
       if (nextStep >= TOTAL_STEPS) {
         setIdentityAnswers(latestAnswers.current)
+        if (user?.id) syncStageAnswers(user.id, 3, latestAnswers.current)
         fetchReflection()
       }
     })
@@ -186,7 +188,9 @@ export default function IdentityFlow() {
   }
 
   function handleContinue() {
-    setProfile({ ...profile, currentStage: Math.max(profile.currentStage ?? 0, 4) })
+    const updatedProfile = { ...profile, currentStage: Math.max(profile.currentStage ?? 0, 4) }
+    setProfile(updatedProfile)
+    if (user?.id) syncProfile(user.id, updatedProfile)
     navigate('/')
   }
 

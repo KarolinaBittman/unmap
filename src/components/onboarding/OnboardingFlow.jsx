@@ -5,6 +5,7 @@ import QuestionCard from './QuestionCard'
 import ReflectionCard from './ReflectionCard'
 import { useUserStore } from '@/store/userStore'
 import { generateOnboardingReflection } from '@/lib/claude'
+import { syncStageAnswers, syncProfile } from '@/lib/db'
 
 const QUESTIONS = [
   {
@@ -71,7 +72,7 @@ export default function OnboardingFlow() {
   const [reflectionError, setReflectionError] = useState(null)
 
   const navigate = useNavigate()
-  const { profile, setProfile, setOnboardingAnswers } = useUserStore()
+  const { user, profile, setProfile, setOnboardingAnswers } = useUserStore()
 
   // Ref always holds the latest answers — avoids stale closures inside
   // setTimeout-chained callbacks (animateAndRun + QuestionCard's auto-advance).
@@ -112,6 +113,7 @@ export default function OnboardingFlow() {
       // Kick off Claude call as soon as we enter the reflection screen
       if (nextStep >= QUESTIONS.length) {
         setOnboardingAnswers(latestAnswers.current)
+        if (user?.id) syncStageAnswers(user.id, 1, latestAnswers.current)
         fetchReflection()
       }
     })
@@ -126,7 +128,9 @@ export default function OnboardingFlow() {
   }
 
   function handleBegin() {
-    setProfile({ ...profile, onboardingComplete: true })
+    const updatedProfile = { ...profile, onboardingComplete: true }
+    setProfile(updatedProfile)
+    if (user?.id) syncProfile(user.id, updatedProfile)
     navigate('/')
   }
 

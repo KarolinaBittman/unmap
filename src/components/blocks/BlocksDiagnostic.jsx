@@ -5,6 +5,7 @@ import QuestionCard from '@/components/onboarding/QuestionCard'
 import BlocksReflectionCard from './BlocksReflectionCard'
 import { useUserStore } from '@/store/userStore'
 import { generateBlocksReflection } from '@/lib/claude'
+import { syncStageAnswers, syncProfile } from '@/lib/db'
 
 const QUESTIONS = [
   {
@@ -79,7 +80,7 @@ export default function BlocksDiagnostic() {
   const [reflectionError, setReflectionError] = useState(null)
 
   const navigate = useNavigate()
-  const { setBlocksAnswers, profile, setProfile } = useUserStore()
+  const { user, setBlocksAnswers, profile, setProfile } = useUserStore()
 
   // Ref always holds the latest answers — avoids stale closures in async callbacks
   const latestAnswers = useRef(answers)
@@ -116,6 +117,7 @@ export default function BlocksDiagnostic() {
       setStep(nextStep)
       if (nextStep >= QUESTIONS.length) {
         setBlocksAnswers(latestAnswers.current)
+        if (user?.id) syncStageAnswers(user.id, 2, latestAnswers.current)
         fetchReflection()
       }
     })
@@ -130,7 +132,9 @@ export default function BlocksDiagnostic() {
   }
 
   function handleContinue() {
-    setProfile({ ...profile, currentStage: Math.max(profile.currentStage ?? 0, 3) })
+    const updatedProfile = { ...profile, currentStage: Math.max(profile.currentStage ?? 0, 3) }
+    setProfile(updatedProfile)
+    if (user?.id) syncProfile(user.id, updatedProfile)
     navigate('/')
   }
 
