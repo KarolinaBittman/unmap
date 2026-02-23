@@ -44,6 +44,9 @@ export const useUserStore = create(
       // Stage 4 Point B answers
       pointBAnswers: null,
 
+      // Stage 5 Roadmap answers
+      roadmapAnswers: null,
+
       // Conversation history — session only, not persisted
       conversationHistory: [],
 
@@ -67,6 +70,7 @@ export const useUserStore = create(
       setBlocksAnswers: (blocksAnswers) => set({ blocksAnswers }),
       setIdentityAnswers: (identityAnswers) => set({ identityAnswers }),
       setPointBAnswers: (pointBAnswers) => set({ pointBAnswers }),
+      setRoadmapAnswers: (roadmapAnswers) => set({ roadmapAnswers }),
       setJourneyProgress: (journeyProgress) => set({ journeyProgress }),
       setPointBClarity: (pointBClarity) => set({ pointBClarity }),
       addToConversation: (message) =>
@@ -89,6 +93,7 @@ export const useUserStore = create(
           if (data.blocksAnswers)     updates.blocksAnswers      = data.blocksAnswers
           if (data.identityAnswers)   updates.identityAnswers    = data.identityAnswers
           if (data.pointBAnswers)     updates.pointBAnswers      = data.pointBAnswers
+          if (data.roadmapAnswers)    updates.roadmapAnswers     = data.roadmapAnswers
           if (data.checkins?.length)  updates.checkins           = data.checkins
           if (Object.keys(updates).length) set(updates)
         } catch (err) {
@@ -109,6 +114,7 @@ export const useUserStore = create(
         blocksAnswers: state.blocksAnswers,
         identityAnswers: state.identityAnswers,
         pointBAnswers: state.pointBAnswers,
+        roadmapAnswers: state.roadmapAnswers,
         checkins: state.checkins,
       }),
     },

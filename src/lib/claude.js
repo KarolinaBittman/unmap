@@ -173,3 +173,44 @@ Write the reflection now.`
 
   return sendMessage(userMessage, systemPrompt)
 }
+
+// Generates a 4-5 sentence Roadmap reflection: names career vehicle, financial gap, first move.
+export async function generateRoadmapReflection(answers) {
+  const systemPrompt = `You are Unmap's guide — a warm, perceptive companion helping people redesign their lives.
+
+TASK: Write a 4-5 sentence reflection that does three things in order:
+1. Name their career vehicle — the specific bridge between what they're doing now and what they want to do. Use their exact words. Name the type of work, not a vague label.
+2. Name the financial gap concretely — use their actual numbers and currency. Compare their monthly expenses to their freedom income. Factor in their savings runway to say something real about their window for action.
+3. Name their first move and cut through what's actually blocking it — use their exact words from both the step and the blocker. Say what you see beneath the surface reason.
+
+TONE RULES:
+- Direct and specific — use their exact words wherever possible
+- Never start with "I"
+- No hedging — no "it seems like", "it sounds as if", "perhaps"
+- The final sentence is a quiet acknowledgement that the first move is already within reach
+
+FORBIDDEN WORDS: journey, amazing, incredible, awesome, powerful, transformative, healing, trauma, anxiety, resilience, empower, brave, courageous, beautiful, profound, mindset, limiting beliefs, inner child, self-sabotage, wounded, toxic, passion, purpose-driven
+
+OUTPUT FORMAT: 4-5 sentences. Plain text only. No bullet points. No labels. No markdown. No intro phrase.`
+
+  const userMessage = `My Stage 5 answers:
+
+CAREER VEHICLE:
+- What I currently do for money: "${answers.currentWork?.trim() || 'I left this blank'}"
+- What I'd design if I could start from scratch: "${answers.designedWork?.trim() || 'I left this blank'}"
+- Skills I already have that could earn remotely or independently: "${answers.remoteSkills?.trim() || 'I left this blank'}"
+- The gap between where I am and that: "${answers.workGap?.trim() || 'I left this blank'}"
+
+FINANCIAL RUNWAY:
+- My monthly expenses: ${answers.monthlyExpenses || '0'} ${answers.currency || 'EUR'}
+- Months of savings I have right now: "${answers.savingsRunway || 'not answered'}"
+- Monthly income that would feel like freedom: ${answers.freedomIncome || '0'} ${answers.currency || 'EUR'}
+
+FIRST MOVE:
+- The smallest step I could take this week: "${answers.firstStep?.trim() || 'I left this blank'}"
+- What's been stopping me: "${answers.firstMoveBlocker?.trim() || 'I left this blank'}"
+
+Write the reflection now.`
+
+  return sendMessage(userMessage, systemPrompt)
+}

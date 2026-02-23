@@ -108,6 +108,7 @@ export async function loadUserData(userId) {
       blocksAnswers: stageMap[2] ?? null,
       identityAnswers: stageMap[3] ?? null,
       pointBAnswers: stageMap[4] ?? null,
+      roadmapAnswers: stageMap[5] ?? null,
       checkins: checkins.map((c) => ({
         day: new Date(c.created_at).toLocaleDateString('en-US', { weekday: 'short' }),
         score: c.mood_score,
@@ -126,8 +127,8 @@ export function registerDebugSync(userId, store) {
   window.__unmapSync = async () => {
     console.group('[db] manual sync')
     console.log('userId:', userId)
-    const { profile, wheelScores, onboardingAnswers, blocksAnswers, identityAnswers, pointBAnswers } = store
-    console.log('store snapshot:', { profile, wheelScores, onboardingAnswers, blocksAnswers, identityAnswers, pointBAnswers })
+    const { profile, wheelScores, onboardingAnswers, blocksAnswers, identityAnswers, pointBAnswers, roadmapAnswers } = store
+    console.log('store snapshot:', { profile, wheelScores, onboardingAnswers, blocksAnswers, identityAnswers, pointBAnswers, roadmapAnswers })
 
     await syncProfile(userId, {
       ...profile,
@@ -141,6 +142,7 @@ export function registerDebugSync(userId, store) {
     if (blocksAnswers)     await syncStageAnswers(userId, 2, blocksAnswers)
     if (identityAnswers)   await syncStageAnswers(userId, 3, identityAnswers)
     if (pointBAnswers)     await syncStageAnswers(userId, 4, pointBAnswers)
+    if (roadmapAnswers)    await syncStageAnswers(userId, 5, roadmapAnswers)
 
     console.log('done')
     console.groupEnd()
