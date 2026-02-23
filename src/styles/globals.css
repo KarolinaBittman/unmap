@@ -1,0 +1,17 @@
+/* Additional global styles — brand-specific overrides and utilities.
+   Core Tailwind + design tokens live in src/index.css (auto-managed). */
+
+/* Smooth scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #E2DFF0 transparent;
+}
+
+/* Horizontal scroll containers — hide scrollbar visually on mobile */
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
