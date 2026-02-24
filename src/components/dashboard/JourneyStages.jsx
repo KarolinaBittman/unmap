@@ -1,9 +1,20 @@
+import { useNavigate } from 'react-router-dom'
 import StageCard from './StageCard'
 import { STAGES } from '@/lib/prompts'
 import { useUserStore } from '@/store/userStore'
 
+const STAGE_ROUTES = {
+  1: '/wheel',
+  2: '/blocks',
+  3: '/identity',
+  4: '/pointb',
+  5: '/vehicle',
+  6: '/location',
+}
+
 export default function JourneyStages() {
   const { profile } = useUserStore()
+  const navigate = useNavigate()
   const currentStage = profile.currentStage
 
   function getStatus(stageId) {
@@ -25,9 +36,17 @@ export default function JourneyStages() {
 
       {/* 2 rows of 3 below 1280px, single row of 6 at xl+ */}
       <div className="grid grid-cols-3 gap-3 xl:grid-cols-6">
-        {STAGES.map((stage) => (
-          <StageCard key={stage.id} stage={stage} status={getStatus(stage.id)} />
-        ))}
+        {STAGES.map((stage) => {
+          const status = getStatus(stage.id)
+          return (
+            <StageCard
+              key={stage.id}
+              stage={stage}
+              status={status}
+              onClick={status !== 'locked' ? () => navigate(STAGE_ROUTES[stage.id]) : undefined}
+            />
+          )
+        })}
       </div>
     </div>
   )

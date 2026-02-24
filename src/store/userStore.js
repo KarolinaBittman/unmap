@@ -8,6 +8,7 @@ export const useUserStore = create(
       // Auth — not persisted (managed by auth session)
       user: null,
       authChecked: false,
+      profileLoaded: false, // true once loadFromSupabase has resolved
 
       // Profile
       profile: {
@@ -67,6 +68,7 @@ export const useUserStore = create(
       // Actions
       setUser: (user) => set({ user }),
       setAuthChecked: (authChecked) => set({ authChecked }),
+      setProfileLoaded: (profileLoaded) => set({ profileLoaded }),
       setProfile: (profile) => set({ profile }),
       setWheelScores: (wheelScores) => set({ wheelScores }),
       setOnboardingAnswers: (onboardingAnswers) => set({ onboardingAnswers }),
@@ -84,7 +86,9 @@ export const useUserStore = create(
       addCheckin: (checkin) =>
         set((state) => ({ checkins: [...state.checkins, checkin] })),
 
-      // Load persisted data from Supabase after sign-in
+      // Load persisted data from Supabase after sign-in.
+      // Always sets profileLoaded: true in finally so ProtectedRoute unblocks
+      // even if the fetch fails or returns no rows.
       loadFromSupabase: async (userId) => {
         try {
           const data = await loadUserData(userId)
@@ -103,6 +107,8 @@ export const useUserStore = create(
           if (Object.keys(updates).length) set(updates)
         } catch (err) {
           console.error('[store] loadFromSupabase error:', err)
+        } finally {
+          set({ profileLoaded: true })
         }
       },
     }),

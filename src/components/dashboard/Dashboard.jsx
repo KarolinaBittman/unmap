@@ -6,7 +6,7 @@ import JourneyStages from './JourneyStages'
 import TodaysResources from './TodaysResources'
 import WellnessTools from './WellnessTools'
 import { useUserStore } from '@/store/userStore'
-import { STAGES } from '@/lib/prompts'
+import { STAGE_NAMES } from '@/lib/prompts'
 
 function greeting() {
   const hour = new Date().getHours()
@@ -17,7 +17,6 @@ function greeting() {
 
 export default function Dashboard() {
   const { profile } = useUserStore()
-  const currentStage = STAGES.find((s) => s.id === profile.currentStage)
 
   return (
     <div className="space-y-6">
@@ -29,7 +28,7 @@ export default function Dashboard() {
         <p className="text-brand-muted text-sm mt-1">
           Stage {profile.currentStage} of 6 ·{' '}
           <span className="text-brand-primary font-medium">
-            {currentStage?.name}
+            {STAGE_NAMES[profile.currentStage]}
           </span>
         </p>
       </div>

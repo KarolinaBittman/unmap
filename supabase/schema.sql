@@ -14,11 +14,14 @@ create table if not exists profiles (
   created_at          timestamptz not null default now()
 );
 
--- Auto-create a profile row when a new user signs up
+-- Auto-create a profile row when a new user signs up.
+-- `set search_path = public` is required for security definer functions on
+-- hosted Supabase — without it the function can't resolve the profiles table
+-- and Supabase Auth returns "Database error saving new user".
 create or replace function handle_new_user()
-returns trigger language plpgsql security definer as $$
+returns trigger language plpgsql security definer set search_path = public as $$
 begin
-  insert into profiles (id, name)
+  insert into public.profiles (id, name)
   values (new.id, new.raw_user_meta_data->>'name')
   on conflict (id) do nothing;
   return new;

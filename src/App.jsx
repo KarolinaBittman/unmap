@@ -17,11 +17,16 @@ import RoadmapPage from '@/pages/RoadmapPage'
 import WorldPage from '@/pages/WorldPage'
 
 // Redirects unauthenticated users to /auth.
-// Renders nothing until the session check has resolved (prevents flash).
-function ProtectedRoute({ children }) {
-  const { user, authChecked } = useUserStore()
-  if (!authChecked) return null
+// Waits for profileLoaded before rendering so the onboarding check uses real
+// Supabase data, not the persisted default.
+// Pass skipOnboardingCheck for the /onboarding route itself to avoid a loop.
+function ProtectedRoute({ children, skipOnboardingCheck = false }) {
+  const { user, authChecked, profileLoaded, profile } = useUserStore()
+  if (!authChecked || !profileLoaded) return null
   if (!user) return <Navigate to="/auth" replace />
+  if (!skipOnboardingCheck && !profile?.onboardingComplete) {
+    return <Navigate to="/onboarding" replace />
+  }
   return children
 }
 
@@ -34,7 +39,7 @@ function AuthRoute({ children }) {
 }
 
 export default function App() {
-  const { setUser, setAuthChecked, loadFromSupabase } = useUserStore()
+  const { setUser, setAuthChecked, setProfileLoaded, loadFromSupabase } = useUserStore()
 
   useEffect(() => {
     // onAuthStateChange fires INITIAL_SESSION immediately on subscribe,
@@ -53,6 +58,10 @@ export default function App() {
       if (u) {
         loadFromSupabase(u.id)
         registerDebugSync(u.id, useUserStore.getState())
+      } else {
+        // Reset so the next sign-in always waits for a fresh Supabase fetch
+        // before ProtectedRoute makes a routing decision.
+        setProfileLoaded(false)
       }
     })
 
@@ -64,13 +73,17 @@ export default function App() {
       <Routes>
         <Route path="/welcome" element={<Landing />} />
         <Route path="/auth" element={<AuthRoute><AuthPage /></AuthRoute>} />
-        <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
+        <Route path="/onboarding" element={<ProtectedRoute skipOnboardingCheck><Onboarding /></ProtectedRoute>} />
         <Route path="/" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+        {/* Stage routes — canonical names + legacy aliases */}
+        <Route path="/wheel" element={<ProtectedRoute><JourneyPage /></ProtectedRoute>} />
         <Route path="/journey" element={<ProtectedRoute><JourneyPage /></ProtectedRoute>} />
         <Route path="/blocks" element={<ProtectedRoute><BlocksPage /></ProtectedRoute>} />
         <Route path="/identity" element={<ProtectedRoute><IdentityPage /></ProtectedRoute>} />
         <Route path="/pointb" element={<ProtectedRoute><PointBPage /></ProtectedRoute>} />
+        <Route path="/vehicle" element={<ProtectedRoute><RoadmapPage /></ProtectedRoute>} />
         <Route path="/roadmap" element={<ProtectedRoute><RoadmapPage /></ProtectedRoute>} />
+        <Route path="/location" element={<ProtectedRoute><WorldPage /></ProtectedRoute>} />
         <Route path="/world" element={<ProtectedRoute><WorldPage /></ProtectedRoute>} />
         <Route path="/checkin" element={<ProtectedRoute><CheckInPage /></ProtectedRoute>} />
         <Route path="/resources" element={<ProtectedRoute><ResourcesPage /></ProtectedRoute>} />

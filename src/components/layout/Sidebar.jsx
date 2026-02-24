@@ -1,5 +1,7 @@
-import { NavLink } from 'react-router-dom'
-import { LayoutDashboard, Map, Heart, BookOpen, Settings } from 'lucide-react'
+import { useState } from 'react'
+import { NavLink, useNavigate } from 'react-router-dom'
+import { LayoutDashboard, Map, Heart, BookOpen, LogOut } from 'lucide-react'
+import { supabase } from '@/lib/supabase'
 import { useUserStore } from '@/store/userStore'
 import { cn } from '@/lib/utils'
 
@@ -11,8 +13,15 @@ const navItems = [
 ]
 
 export default function Sidebar() {
+  const [menuOpen, setMenuOpen] = useState(false)
   const { profile, journeyProgress } = useUserStore()
+  const navigate = useNavigate()
   const initials = profile.name ? profile.name[0].toUpperCase() : 'U'
+
+  async function handleSignOut() {
+    await supabase.auth.signOut()
+    navigate('/auth')
+  }
 
   return (
     <aside className="w-64 bg-white border-r border-brand-border h-screen flex flex-col fixed left-0 top-0 z-40">
@@ -59,13 +68,16 @@ export default function Sidebar() {
         </div>
       </div>
 
-      {/* User profile */}
+      {/* User profile + logout */}
       <div className="p-4 border-t border-brand-border">
-        <div className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-brand-surface/50 cursor-pointer transition-all duration-200 group">
+        <button
+          onClick={() => setMenuOpen((o) => !o)}
+          className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-brand-surface/50 cursor-pointer transition-all duration-200 group"
+        >
           <div className="w-8 h-8 bg-brand-primary rounded-full flex items-center justify-center text-white text-sm font-semibold shrink-0">
             {initials}
           </div>
-          <div className="flex-1 min-w-0">
+          <div className="flex-1 min-w-0 text-left">
             <p className="text-sm font-medium text-brand-text truncate">
               {profile.name}
             </p>
@@ -73,11 +85,17 @@ export default function Sidebar() {
               {journeyProgress}% complete
             </p>
           </div>
-          <Settings
-            size={15}
-            className="text-brand-muted opacity-0 group-hover:opacity-100 transition-opacity"
-          />
-        </div>
+        </button>
+
+        {menuOpen && (
+          <button
+            onClick={handleSignOut}
+            className="w-full mt-1 flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm text-brand-muted hover:bg-red-50 hover:text-red-500 transition-all duration-150"
+          >
+            <LogOut size={15} />
+            Sign out
+          </button>
+        )}
       </div>
     </aside>
   )

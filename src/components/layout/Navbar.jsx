@@ -1,6 +1,7 @@
 import { useState } from 'react'
-import { NavLink } from 'react-router-dom'
-import { Menu, X, LayoutDashboard, Map, Heart, BookOpen } from 'lucide-react'
+import { NavLink, useNavigate } from 'react-router-dom'
+import { Menu, X, LayoutDashboard, Map, Heart, BookOpen, LogOut } from 'lucide-react'
+import { supabase } from '@/lib/supabase'
 import { useUserStore } from '@/store/userStore'
 import { cn } from '@/lib/utils'
 
@@ -14,6 +15,13 @@ const navItems = [
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false)
   const { profile } = useUserStore()
+  const navigate = useNavigate()
+
+  async function handleSignOut() {
+    setMenuOpen(false)
+    await supabase.auth.signOut()
+    navigate('/auth')
+  }
 
   return (
     <>
@@ -62,9 +70,16 @@ export default function Navbar() {
                 <div className="w-7 h-7 bg-brand-primary rounded-full flex items-center justify-center text-white text-xs font-semibold">
                   {profile.name?.[0] ?? 'U'}
                 </div>
-                <p className="text-sm font-medium text-brand-text">
+                <p className="text-sm font-medium text-brand-text flex-1">
                   {profile.name}
                 </p>
+                <button
+                  onClick={handleSignOut}
+                  className="flex items-center gap-1.5 text-xs text-brand-muted hover:text-red-500 transition-colors duration-150 px-2 py-1 rounded-lg hover:bg-red-50"
+                >
+                  <LogOut size={13} />
+                  Sign out
+                </button>
               </div>
             </div>
           </nav>

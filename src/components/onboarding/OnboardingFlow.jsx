@@ -131,7 +131,7 @@ export default function OnboardingFlow() {
     const updatedProfile = { ...profile, onboardingComplete: true }
     setProfile(updatedProfile)
     if (user?.id) syncProfile(user.id, updatedProfile)
-    navigate('/')
+    navigate('/wheel')
   }
 
   return (

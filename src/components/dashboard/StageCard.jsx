@@ -2,20 +2,25 @@ import { CheckCircle, Lock, ArrowRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 // status: 'completed' | 'current' | 'locked'
-export default function StageCard({ stage, status }) {
+export default function StageCard({ stage, status, onClick }) {
   const isCompleted = status === 'completed'
   const isCurrent = status === 'current'
   const isLocked = status === 'locked'
+  const isClickable = !isLocked && !!onClick
 
   return (
     <div
+      onClick={isClickable ? onClick : undefined}
+      role={isClickable ? 'button' : undefined}
+      tabIndex={isClickable ? 0 : undefined}
+      onKeyDown={isClickable ? (e) => e.key === 'Enter' && onClick() : undefined}
       className={cn(
         'rounded-2xl p-5 flex flex-col gap-3 transition-all duration-200',
         isCompleted && 'bg-brand-success/10 border border-brand-success/40',
-        isCurrent &&
-          'bg-brand-surface border-2 border-brand-primary shadow-sm',
-        isLocked &&
-          'bg-white border border-brand-border opacity-55',
+        isCurrent && 'bg-brand-surface border-2 border-brand-primary shadow-sm',
+        isLocked && 'bg-white border border-brand-border opacity-55',
+        isClickable && 'cursor-pointer hover:shadow-md',
+        isCurrent && 'animate-pulse-subtle',
       )}
     >
       {/* Status icon + stage number */}

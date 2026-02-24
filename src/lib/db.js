@@ -65,6 +65,21 @@ export async function syncStageAnswers(userId, stage, answers, extra = {}) {
   }
 }
 
+// ─── Check-ins ───────────────────────────────────────────────────────────────
+
+export async function syncCheckin(userId, moodScore, note = '') {
+  try {
+    const { error } = await supabase
+      .from('checkins')
+      .insert({ user_id: userId, mood_score: moodScore, note: note || null })
+    if (error) console.error('[db] syncCheckin error:', error)
+    return !error
+  } catch (err) {
+    console.error('[db] syncCheckin exception:', err)
+    return false
+  }
+}
+
 // ─── Load all user data ──────────────────────────────────────────────────────
 
 export async function loadUserData(userId) {
