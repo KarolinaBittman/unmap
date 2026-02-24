@@ -12,29 +12,29 @@ export const useUserStore = create(
 
       // Profile
       profile: {
-        name: 'Karolina',
-        currentStage: 3,
-        onboardingComplete: true,
+        name: '',
+        currentStage: 1,
+        onboardingComplete: false,
       },
 
-      // Wheel of Life scores
+      // Wheel of Life scores — all zero until the user has actually scored them
       wheelScores: {
-        career: 6,
-        health: 5,
-        relationships: 7,
-        money: 4,
-        growth: 8,
-        fun: 3,
-        environment: 6,
-        purpose: 5,
+        career: 0,
+        health: 0,
+        relationships: 0,
+        money: 0,
+        growth: 0,
+        fun: 0,
+        environment: 0,
+        purpose: 0,
       },
 
       // Stage 1 onboarding answers
       onboardingAnswers: null,
 
       // Journey progress
-      journeyProgress: 42,
-      pointBClarity: 67,
+      journeyProgress: 0,
+      pointBClarity: 0,
 
       // Stage 2 blocks answers
       blocksAnswers: null,
@@ -55,20 +55,31 @@ export const useUserStore = create(
       conversationHistory: [],
 
       // Checkin history for chart
-      checkins: [
-        { day: 'Mon', score: 5 },
-        { day: 'Tue', score: 6 },
-        { day: 'Wed', score: 4 },
-        { day: 'Thu', score: 7 },
-        { day: 'Fri', score: 8 },
-        { day: 'Sat', score: 7 },
-        { day: 'Sun', score: 9 },
-      ],
+      checkins: [],
 
       // Actions
       setUser: (user) => set({ user }),
       setAuthChecked: (authChecked) => set({ authChecked }),
       setProfileLoaded: (profileLoaded) => set({ profileLoaded }),
+
+      // Wipe all user data from memory and localStorage on sign-out so the
+      // next user who signs in starts with a clean slate.
+      clearUserData: () => set({
+        user: null,
+        profileLoaded: false,
+        profile: { name: '', currentStage: 1, onboardingComplete: false },
+        wheelScores: { career: 0, health: 0, relationships: 0, money: 0, growth: 0, fun: 0, environment: 0, purpose: 0 },
+        onboardingAnswers: null,
+        journeyProgress: 0,
+        pointBClarity: 0,
+        blocksAnswers: null,
+        identityAnswers: null,
+        pointBAnswers: null,
+        roadmapAnswers: null,
+        worldAnswers: null,
+        conversationHistory: [],
+        checkins: [],
+      }),
       setProfile: (profile) => set({ profile }),
       setWheelScores: (wheelScores) => set({ wheelScores }),
       setOnboardingAnswers: (onboardingAnswers) => set({ onboardingAnswers }),
@@ -94,7 +105,10 @@ export const useUserStore = create(
           const data = await loadUserData(userId)
           const updates = {}
           if (data.profile)           updates.profile            = data.profile
-          if (data.wheelScores)       updates.wheelScores        = data.wheelScores
+          // Always set wheelScores — use DB data if the user has scored, or zeros
+          // for a fresh account. This prevents old persisted mock/dev data from
+          // showing pre-filled sliders to new users.
+          updates.wheelScores = data.wheelScores ?? { career: 0, health: 0, relationships: 0, money: 0, growth: 0, fun: 0, environment: 0, purpose: 0 }
           if (data.journeyProgress !== null) updates.journeyProgress = data.journeyProgress
           if (data.pointBClarity !== null)   updates.pointBClarity   = data.pointBClarity
           if (data.onboardingAnswers) updates.onboardingAnswers  = data.onboardingAnswers

@@ -1,9 +1,10 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { CheckCircle, ArrowRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useUserStore } from '@/store/userStore'
 import WheelPreview from '@/components/dashboard/WheelPreview'
-import { syncWheelScores } from '@/lib/db'
+import { syncWheelScores, syncProfile } from '@/lib/db'
 
 const AREAS = [
   { id: 'career',        label: 'Career',        hint: 'Work, growth, income, satisfaction' },
@@ -16,21 +17,21 @@ const AREAS = [
   { id: 'purpose',       label: 'Purpose',       hint: 'Meaning, direction, contribution' },
 ]
 
-// Gradient: coral → orange → amber → lime → green
+// Gradient: coral/pink → purple → teal → ocean blue (matches hero gradient cards)
 const SCORED_GRADIENT =
-  'linear-gradient(to right, #fb7185 0%, #f97316 28%, #fbbf24 55%, #a3e635 78%, #4ade80 100%)'
+  'linear-gradient(to right, #F093FB 0%, #7C6BAE 33%, #4FACFE 66%, #0099FF 100%)'
 const UNSCORED_TRACK = '#E2DFF0'
 const THUMB_W = 22 // px — must match CSS (.wheel-slider thumb width)
 
 function badgeClass(score) {
   if (score === null) return 'bg-brand-surface text-brand-muted'
-  if (score <= 3)     return 'bg-rose-50 text-rose-500'
+  if (score <= 3)     return 'bg-brand-secondary/20 text-brand-secondary'
   if (score <= 6)     return 'bg-amber-50 text-amber-600'
   return 'bg-brand-success/15 text-brand-success'
 }
 
 function dotColor(score) {
-  if (score === null || score <= 3) return 'text-rose-400'
+  if (score === null || score <= 3) return 'text-brand-secondary'
   if (score <= 6)                   return 'text-amber-500'
   return 'text-brand-success'
 }
@@ -78,8 +79,9 @@ function AreaSlider({ id, score, onScore }) {
 }
 
 export default function WheelOfLifeSetup() {
+  const [saved, setSaved] = useState(false)
   const navigate = useNavigate()
-  const { user, wheelScores, setWheelScores } = useUserStore()
+  const { user, profile, wheelScores, setWheelScores, setProfile, setJourneyProgress } = useUserStore()
 
   // Seed sliders from the persisted store on first mount.
   // Values >0 mean the area was previously scored; 0/undefined means unscored (null).
@@ -105,8 +107,61 @@ export default function WheelOfLifeSetup() {
       AREAS.map(({ id }) => [id, scores[id] ?? 0]),
     )
     setWheelScores(finalScores)
-    if (user?.id) syncWheelScores(user.id, finalScores)
-    navigate('/')
+
+    // Advance to Stage 2 and set journey progress to 17% (1 of 6 stages done)
+    const updatedProfile = { ...profile, currentStage: Math.max(profile.currentStage, 2) }
+    setProfile(updatedProfile)
+    setJourneyProgress(17)
+
+    if (user?.id) {
+      syncWheelScores(user.id, finalScores)
+      syncProfile(user.id, { ...updatedProfile, journeyProgress: 17 })
+    }
+
+    setSaved(true)
+  }
+
+  // ── Stage 1 completion screen ─────────────────────────────────────────────
+  if (saved) {
+    return (
+      <div className="max-w-lg mx-auto pt-12 pb-20 md:pb-0 space-y-6 text-center">
+        <div className="flex justify-center">
+          <div className="w-16 h-16 rounded-full bg-brand-primary/10 flex items-center justify-center">
+            <CheckCircle size={32} className="text-brand-primary" />
+          </div>
+        </div>
+
+        <div>
+          <span className="text-[11px] font-semibold text-brand-primary uppercase tracking-widest">
+            Stage 1 complete
+          </span>
+          <h2 className="font-heading font-bold text-2xl text-brand-text mt-2">
+            Your Wheel of Life is saved.
+          </h2>
+          <p className="text-brand-muted text-sm mt-2 max-w-sm mx-auto">
+            Now you have a clear snapshot of where you are. Stage 2 is unlocked — it's time to look at what got you here.
+          </p>
+        </div>
+
+        <div className="bg-brand-surface rounded-2xl p-5 border border-brand-border">
+          <p className="text-[11px] font-semibold text-brand-primary uppercase tracking-widest mb-1">
+            Stage 2 — Now unlocked
+          </p>
+          <p className="font-heading font-semibold text-brand-text">What Happened to You</p>
+          <p className="text-xs text-brand-muted mt-1">
+            Understand the roots of what's keeping you stuck. Name the pattern without diagnosing it.
+          </p>
+        </div>
+
+        <button
+          onClick={() => navigate('/')}
+          className="w-full flex items-center justify-center gap-2 bg-brand-primary text-white py-4 rounded-xl font-heading font-semibold text-base hover:bg-brand-primary/90 transition-all duration-200 shadow-sm hover:shadow-md"
+        >
+          Continue to Stage 2
+          <ArrowRight size={18} />
+        </button>
+      </div>
+    )
   }
 
   return (

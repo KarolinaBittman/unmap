@@ -14,11 +14,12 @@ const navItems = [
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false)
-  const { profile } = useUserStore()
+  const { profile, clearUserData } = useUserStore()
   const navigate = useNavigate()
 
   async function handleSignOut() {
     setMenuOpen(false)
+    clearUserData()
     await supabase.auth.signOut()
     navigate('/auth')
   }

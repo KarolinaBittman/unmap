@@ -25,6 +25,12 @@ export async function sendMessage(userMessage, systemPrompt, conversationHistory
 export async function generateOnboardingReflection(answers) {
   const store = useUserStore.getState()
 
+  // At onboarding time the wheel hasn't been scored yet — strip wheel scores
+  // so the prompt doesn't hallucinate tension between satisfaction score and
+  // wheel numbers that came from mock/persisted data, not this user's input.
+  const BLANK_WHEEL = { career: 0, health: 0, relationships: 0, money: 0, growth: 0, fun: 0, environment: 0, purpose: 0 }
+  const storeForPrompt = { ...store, wheelScores: BLANK_WHEEL }
+
   const readinessLabels = {
     1: 'just starting to explore',
     2: 'thinking things through',
@@ -38,7 +44,7 @@ export async function generateOnboardingReflection(answers) {
       ? answers.stuckArea.join(', ')
       : 'various areas'
 
-  const systemPrompt = `${buildSystemPrompt(store, 1)}
+  const systemPrompt = `${buildSystemPrompt(storeForPrompt, 1)}
 
 TASK: Write a 3-4 sentence personalised reflection based on the user's Stage 1 answers. Reflect back what they actually said — use their words, not paraphrases. Note any tension between their life satisfaction score and their Wheel of Life scores if both are available. The final sentence opens a door gently — not advice, not a question, just an acknowledgement of what's possible.
 

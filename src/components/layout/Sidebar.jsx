@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { LayoutDashboard, Map, Heart, BookOpen, LogOut } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
@@ -13,12 +12,12 @@ const navItems = [
 ]
 
 export default function Sidebar() {
-  const [menuOpen, setMenuOpen] = useState(false)
-  const { profile, journeyProgress } = useUserStore()
+  const { profile, journeyProgress, clearUserData } = useUserStore()
   const navigate = useNavigate()
   const initials = profile.name ? profile.name[0].toUpperCase() : 'U'
 
   async function handleSignOut() {
+    clearUserData()
     await supabase.auth.signOut()
     navigate('/auth')
   }
@@ -69,15 +68,12 @@ export default function Sidebar() {
       </div>
 
       {/* User profile + logout */}
-      <div className="p-4 border-t border-brand-border">
-        <button
-          onClick={() => setMenuOpen((o) => !o)}
-          className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-brand-surface/50 cursor-pointer transition-all duration-200 group"
-        >
+      <div className="p-4 border-t border-brand-border space-y-1">
+        <div className="flex items-center gap-3 px-4 py-2">
           <div className="w-8 h-8 bg-brand-primary rounded-full flex items-center justify-center text-white text-sm font-semibold shrink-0">
             {initials}
           </div>
-          <div className="flex-1 min-w-0 text-left">
+          <div className="flex-1 min-w-0">
             <p className="text-sm font-medium text-brand-text truncate">
               {profile.name}
             </p>
@@ -85,17 +81,15 @@ export default function Sidebar() {
               {journeyProgress}% complete
             </p>
           </div>
-        </button>
+        </div>
 
-        {menuOpen && (
-          <button
-            onClick={handleSignOut}
-            className="w-full mt-1 flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm text-brand-muted hover:bg-red-50 hover:text-red-500 transition-all duration-150"
-          >
-            <LogOut size={15} />
-            Sign out
-          </button>
-        )}
+        <button
+          onClick={handleSignOut}
+          className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm text-brand-muted hover:bg-red-50 hover:text-red-500 transition-all duration-150"
+        >
+          <LogOut size={15} />
+          Log out
+        </button>
       </div>
     </aside>
   )
