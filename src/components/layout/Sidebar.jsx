@@ -17,8 +17,8 @@ export default function Sidebar() {
   const initials = profile.name ? profile.name[0].toUpperCase() : 'U'
 
   async function handleSignOut() {
-    clearUserData()
     await supabase.auth.signOut()
+    clearUserData()
     navigate('/auth')
   }
 
@@ -67,9 +67,9 @@ export default function Sidebar() {
         </div>
       </div>
 
-      {/* User profile + logout */}
-      <div className="p-4 border-t border-brand-border space-y-1">
-        <div className="flex items-center gap-3 px-4 py-2">
+      {/* User profile */}
+      <div className="px-4 pt-4 pb-2 border-t border-brand-border">
+        <div className="flex items-center gap-3 px-2 py-2">
           <div className="w-8 h-8 bg-brand-primary rounded-full flex items-center justify-center text-white text-sm font-semibold shrink-0">
             {initials}
           </div>
@@ -82,10 +82,13 @@ export default function Sidebar() {
             </p>
           </div>
         </div>
+      </div>
 
+      {/* Log out — always visible at the very bottom */}
+      <div className="px-4 pb-5">
         <button
           onClick={handleSignOut}
-          className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm text-brand-muted hover:bg-red-50 hover:text-red-500 transition-all duration-150"
+          className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium text-brand-muted border border-brand-border hover:border-red-200 hover:bg-red-50 hover:text-red-500 transition-all duration-150"
         >
           <LogOut size={15} />
           Log out

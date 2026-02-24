@@ -135,7 +135,7 @@ export default function IdentityFlow() {
   const [reflectionError, setReflectionError] = useState(null)
 
   const navigate = useNavigate()
-  const { user, profile, setProfile, setIdentityAnswers } = useUserStore()
+  const { user, profile, setProfile, setIdentityAnswers, journeyProgress, setJourneyProgress } = useUserStore()
 
   // Ref always holds the latest answers — avoids stale closures in async callbacks
   const latestAnswers = useRef(answers)
@@ -188,9 +188,12 @@ export default function IdentityFlow() {
   }
 
   function handleContinue() {
-    const updatedProfile = { ...profile, currentStage: Math.max(profile.currentStage ?? 0, 4) }
+    const nextStage = Math.max(profile.currentStage ?? 0, 4)
+    const nextProgress = Math.max(journeyProgress ?? 0, 50)
+    const updatedProfile = { ...profile, currentStage: nextStage }
     setProfile(updatedProfile)
-    if (user?.id) syncProfile(user.id, updatedProfile)
+    setJourneyProgress(nextProgress)
+    if (user?.id) syncProfile(user.id, { ...updatedProfile, journeyProgress: nextProgress })
     navigate('/')
   }
 

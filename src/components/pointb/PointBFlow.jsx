@@ -149,7 +149,7 @@ export default function PointBFlow() {
   const [reflectionError, setReflectionError] = useState(null)
 
   const navigate = useNavigate()
-  const { user, profile, setProfile, setPointBAnswers, setPointBClarity } = useUserStore()
+  const { user, profile, setProfile, setPointBAnswers, setPointBClarity, journeyProgress, setJourneyProgress } = useUserStore()
 
   // Ref always holds the latest answers — avoids stale closures in async callbacks
   const latestAnswers = useRef(answers)
@@ -204,9 +204,12 @@ export default function PointBFlow() {
   }
 
   function handleContinue() {
-    const updatedProfile = { ...profile, currentStage: Math.max(profile.currentStage ?? 0, 5) }
+    const nextStage = Math.max(profile.currentStage ?? 0, 5)
+    const nextProgress = Math.max(journeyProgress ?? 0, 67)
+    const updatedProfile = { ...profile, currentStage: nextStage }
     setProfile(updatedProfile)
-    if (user?.id) syncProfile(user.id, updatedProfile)
+    setJourneyProgress(nextProgress)
+    if (user?.id) syncProfile(user.id, { ...updatedProfile, journeyProgress: nextProgress })
     navigate('/')
   }
 

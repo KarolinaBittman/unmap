@@ -80,7 +80,7 @@ export default function BlocksDiagnostic() {
   const [reflectionError, setReflectionError] = useState(null)
 
   const navigate = useNavigate()
-  const { user, setBlocksAnswers, profile, setProfile } = useUserStore()
+  const { user, setBlocksAnswers, profile, setProfile, journeyProgress, setJourneyProgress } = useUserStore()
 
   // Ref always holds the latest answers — avoids stale closures in async callbacks
   const latestAnswers = useRef(answers)
@@ -132,9 +132,12 @@ export default function BlocksDiagnostic() {
   }
 
   function handleContinue() {
-    const updatedProfile = { ...profile, currentStage: Math.max(profile.currentStage ?? 0, 3) }
+    const nextStage = Math.max(profile.currentStage ?? 0, 3)
+    const nextProgress = Math.max(journeyProgress ?? 0, 33)
+    const updatedProfile = { ...profile, currentStage: nextStage }
     setProfile(updatedProfile)
-    if (user?.id) syncProfile(user.id, updatedProfile)
+    setJourneyProgress(nextProgress)
+    if (user?.id) syncProfile(user.id, { ...updatedProfile, journeyProgress: nextProgress })
     navigate('/')
   }
 

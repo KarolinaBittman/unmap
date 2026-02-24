@@ -4,7 +4,7 @@ import { loadUserData } from '@/lib/db'
 
 export const useUserStore = create(
   persist(
-    (set) => ({
+    (set, get) => ({
       // Auth — not persisted (managed by auth session)
       user: null,
       authChecked: false,
@@ -104,12 +104,24 @@ export const useUserStore = create(
         try {
           const data = await loadUserData(userId)
           const updates = {}
-          if (data.profile)           updates.profile            = data.profile
+          if (data.profile) {
+            // Never downgrade currentStage — local progress wins if it's ahead of the DB.
+            // This prevents TOKEN_REFRESHED events from reverting completed stages when
+            // a background syncProfile call failed or hadn't landed yet.
+            const localStage = get().profile.currentStage ?? 1
+            updates.profile = {
+              ...data.profile,
+              currentStage: Math.max(data.profile.currentStage ?? 1, localStage),
+            }
+          }
           // Always set wheelScores — use DB data if the user has scored, or zeros
           // for a fresh account. This prevents old persisted mock/dev data from
           // showing pre-filled sliders to new users.
           updates.wheelScores = data.wheelScores ?? { career: 0, health: 0, relationships: 0, money: 0, growth: 0, fun: 0, environment: 0, purpose: 0 }
-          if (data.journeyProgress !== null) updates.journeyProgress = data.journeyProgress
+          // Also protect journeyProgress from being downgraded by a stale DB value.
+          if (data.journeyProgress !== null) {
+            updates.journeyProgress = Math.max(data.journeyProgress ?? 0, get().journeyProgress ?? 0)
+          }
           if (data.pointBClarity !== null)   updates.pointBClarity   = data.pointBClarity
           if (data.onboardingAnswers) updates.onboardingAnswers  = data.onboardingAnswers
           if (data.blocksAnswers)     updates.blocksAnswers      = data.blocksAnswers
