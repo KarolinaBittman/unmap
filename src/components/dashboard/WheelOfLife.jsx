@@ -54,10 +54,10 @@ export default function WheelOfLife() {
           <Radar
             name="Life Score"
             dataKey="score"
-            stroke="#7C6BAE"
-            fill="#7C6BAE"
+            stroke="#0D9488"
+            fill="#0D9488"
             fillOpacity={0.3}
-            dot={{ fill: '#7C6BAE', r: 4, strokeWidth: 0 }}
+            dot={{ fill: '#0D9488', r: 4, strokeWidth: 0 }}
           />
         </RadarChart>
       </ResponsiveContainer>

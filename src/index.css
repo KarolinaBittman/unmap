@@ -9,7 +9,7 @@
   /* Brand colours */
   --color-brand-bg: #FAFAF8;
   --color-brand-surface: #F0EEF8;
-  --color-brand-primary: #7C6BAE;
+  --color-brand-primary: #0D9488;
   --color-brand-secondary: #E8A598;
   --color-brand-text: #2C2840;
   --color-brand-muted: #8B85A0;
@@ -162,7 +162,7 @@ input[type='range'].wheel-slider::-webkit-slider-thumb {
   height: 22px;
   border-radius: 50%;
   background: white;
-  border: 2.5px solid #7C6BAE;
+  border: 2.5px solid #0D9488;
   box-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
   cursor: grab;
   margin-top: -8px;
@@ -172,7 +172,7 @@ input[type='range'].wheel-slider::-webkit-slider-thumb {
 input[type='range'].wheel-slider::-webkit-slider-thumb:active {
   cursor: grabbing;
   transform: scale(1.15);
-  box-shadow: 0 2px 10px rgba(124, 107, 174, 0.35);
+  box-shadow: 0 2px 10px rgba(13, 148, 136, 0.35);
 }
 
 input[type='range'].wheel-slider::-moz-range-track {
@@ -186,7 +186,7 @@ input[type='range'].wheel-slider::-moz-range-thumb {
   height: 22px;
   border-radius: 50%;
   background: white;
-  border: 2.5px solid #7C6BAE;
+  border: 2.5px solid #0D9488;
   box-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
   cursor: grab;
 }

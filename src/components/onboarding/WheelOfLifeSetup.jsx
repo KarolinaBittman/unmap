@@ -17,23 +17,23 @@ const AREAS = [
   { id: 'purpose',       label: 'Purpose',       hint: 'Meaning, direction, contribution' },
 ]
 
-// Gradient: coral/pink → purple → teal → ocean blue (matches hero gradient cards)
+// Gradient: coral/pink → indigo → cyan → teal primary
 const SCORED_GRADIENT =
-  'linear-gradient(to right, #F093FB 0%, #7C6BAE 33%, #4FACFE 66%, #0099FF 100%)'
+  'linear-gradient(to right, #F093FB 0%, #818CF8 33%, #22D3EE 66%, #0D9488 100%)'
 const UNSCORED_TRACK = '#E2DFF0'
 const THUMB_W = 22 // px — must match CSS (.wheel-slider thumb width)
 
 function badgeClass(score) {
   if (score === null) return 'bg-brand-surface text-brand-muted'
   if (score <= 3)     return 'bg-brand-secondary/20 text-brand-secondary'
-  if (score <= 6)     return 'bg-amber-50 text-amber-600'
-  return 'bg-brand-success/15 text-brand-success'
+  if (score <= 6)     return 'bg-blue-50 text-blue-500'
+  return 'bg-brand-primary/10 text-brand-primary'
 }
 
 function dotColor(score) {
   if (score === null || score <= 3) return 'text-brand-secondary'
-  if (score <= 6)                   return 'text-amber-500'
-  return 'text-brand-success'
+  if (score <= 6)                   return 'text-blue-500'
+  return 'text-brand-primary'
 }
 
 // Returns the CSS `left` value that places an element (with translateX(-50%))

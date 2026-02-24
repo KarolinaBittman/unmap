@@ -204,9 +204,20 @@ export default function IdentityFlow() {
       <header className="shrink-0 px-6 pt-6 pb-4">
         <div className="max-w-lg mx-auto">
           <div className="flex items-center justify-between mb-3">
-            <span className="font-heading font-bold text-brand-text tracking-tight">
-              unmap
-            </span>
+            <div className="flex items-center gap-3">
+              {!isReflection && step > 0 && (
+                <button
+                  onClick={goBack}
+                  className="p-1 -ml-1 rounded-lg text-brand-muted hover:text-brand-text transition-colors duration-150"
+                  aria-label="Go back"
+                >
+                  <ArrowLeft size={18} />
+                </button>
+              )}
+              <span className="font-heading font-bold text-brand-text tracking-tight">
+                unmap
+              </span>
+            </div>
             {!isReflection && (
               <span className="text-xs text-brand-muted tabular-nums">
                 {step + 1} / {TOTAL_STEPS}
