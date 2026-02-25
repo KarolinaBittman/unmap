@@ -65,6 +65,43 @@ export async function syncStageAnswers(userId, stage, answers, extra = {}) {
   }
 }
 
+// ─── Reflections ─────────────────────────────────────────────────────────────
+// Supabase table (create once):
+// create table reflections (
+//   id uuid primary key default gen_random_uuid(),
+//   user_id uuid references profiles(id),
+//   stage integer not null,
+//   content text not null,
+//   cycle integer not null default 1,
+//   created_at timestamp default now()
+// );
+
+export async function insertReflection(userId, stage, content, cycle = 1) {
+  try {
+    const { error } = await supabase
+      .from('reflections')
+      .insert({ user_id: userId, stage, content, cycle })
+    if (error) console.error('[db] insertReflection error:', error)
+  } catch (err) {
+    console.error('[db] insertReflection exception:', err)
+  }
+}
+
+export async function loadReflections(userId) {
+  try {
+    const { data, error } = await supabase
+      .from('reflections')
+      .select('id, stage, content, cycle, created_at')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false })
+    if (error) console.error('[db] loadReflections error:', error)
+    return data ?? []
+  } catch (err) {
+    console.error('[db] loadReflections exception:', err)
+    return []
+  }
+}
+
 // ─── Check-ins ───────────────────────────────────────────────────────────────
 
 export async function syncCheckin(userId, moodScore, note = '') {

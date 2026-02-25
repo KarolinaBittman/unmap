@@ -1,6 +1,7 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { useUserStore } from '@/store/userStore'
 import { buildSystemPrompt } from './prompts'
+import { insertReflection } from './db'
 
 const client = new Anthropic({
   apiKey: import.meta.env.VITE_ANTHROPIC_API_KEY,
@@ -59,7 +60,10 @@ OUTPUT FORMAT: 3-4 sentences. Plain text only. No bullet points. No labels. No m
 
 Write the reflection now.`
 
-  return sendMessage(userMessage, systemPrompt)
+  const text = await sendMessage(userMessage, systemPrompt)
+  const userId = store.user?.id
+  if (userId) insertReflection(userId, 0, text)
+  return text
 }
 
 // ─── Stage 2 ──────────────────────────────────────────────────────────────────
@@ -82,7 +86,10 @@ OUTPUT FORMAT: 3-4 sentences. Plain text only. No bullet points. No labels. No m
 
 Write the reflection now.`
 
-  return sendMessage(userMessage, systemPrompt)
+  const text = await sendMessage(userMessage, systemPrompt)
+  const userId = store.user?.id
+  if (userId) insertReflection(userId, 2, text)
+  return text
 }
 
 // ─── Stage 3 ──────────────────────────────────────────────────────────────────
@@ -121,7 +128,10 @@ OUTPUT FORMAT: 4-5 sentences. Plain text only. No bullet points. No labels. No m
 
 Write the reflection now.`
 
-  return sendMessage(userMessage, systemPrompt)
+  const text = await sendMessage(userMessage, systemPrompt)
+  const userId = store.user?.id
+  if (userId) insertReflection(userId, 3, text)
+  return text
 }
 
 // ─── Stage 4 ──────────────────────────────────────────────────────────────────
@@ -160,7 +170,10 @@ UNCENSORED:
 
 Write the reflection now.`
 
-  return sendMessage(userMessage, systemPrompt)
+  const text = await sendMessage(userMessage, systemPrompt)
+  const userId = store.user?.id
+  if (userId) insertReflection(userId, 4, text)
+  return text
 }
 
 // ─── Stage 5 ──────────────────────────────────────────────────────────────────
@@ -196,7 +209,10 @@ FIRST MOVE:
 
 Write the reflection now.`
 
-  return sendMessage(userMessage, systemPrompt)
+  const text = await sendMessage(userMessage, systemPrompt)
+  const userId = store.user?.id
+  if (userId) insertReflection(userId, 5, text)
+  return text
 }
 
 // ─── Stage 6 ──────────────────────────────────────────────────────────────────
@@ -245,5 +261,8 @@ ${prioritiesList}
 
 Suggest 3 specific cities or regions now.`
 
-  return sendMessage(userMessage, systemPrompt)
+  const text = await sendMessage(userMessage, systemPrompt)
+  const userId = store.user?.id
+  if (userId) insertReflection(userId, 6, text)
+  return text
 }

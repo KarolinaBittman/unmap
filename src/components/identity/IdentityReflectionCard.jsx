@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom'
 import { Gem, RefreshCw, AlertCircle } from 'lucide-react'
 
 const NEXT_STEPS = [
@@ -43,6 +44,7 @@ function ReflectionError({ onRetry }) {
 }
 
 export default function IdentityReflectionCard({ reflection, loading, error, onRetry, onContinue, values, nonNegotiable }) {
+  const navigate = useNavigate()
   return (
     <div className="space-y-4">
 
@@ -133,6 +135,15 @@ export default function IdentityReflectionCard({ reflection, loading, error, onR
       >
         Continue to Stage 4 →
       </button>
+
+      {reflection && !loading && (
+        <button
+          onClick={() => navigate('/reflections')}
+          className="w-full text-sm font-medium text-brand-muted hover:text-brand-primary transition-colors duration-150 py-1"
+        >
+          Read your reflection again →
+        </button>
+      )}
 
     </div>
   )

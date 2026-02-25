@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom'
 import { Globe2, RefreshCw, AlertCircle } from 'lucide-react'
 
 const NEXT_STEPS = [
@@ -52,6 +53,7 @@ export default function WorldReflectionCard({
   onContinue,
   topPriorities,
 }) {
+  const navigate = useNavigate()
   return (
     <div className="space-y-4">
 
@@ -136,6 +138,15 @@ export default function WorldReflectionCard({
       >
         Go to my dashboard →
       </button>
+
+      {reflection && !loading && (
+        <button
+          onClick={() => navigate('/reflections')}
+          className="w-full text-sm font-medium text-brand-muted hover:text-brand-primary transition-colors duration-150 py-1"
+        >
+          Read your reflection again →
+        </button>
+      )}
 
     </div>
   )

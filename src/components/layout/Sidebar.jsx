@@ -1,5 +1,5 @@
 import { NavLink, useNavigate } from 'react-router-dom'
-import { LayoutDashboard, Map, Heart, BookOpen, LogOut } from 'lucide-react'
+import { LayoutDashboard, Map, Heart, BookOpen, LogOut, ScrollText } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { useUserStore } from '@/store/userStore'
 import { cn } from '@/lib/utils'
@@ -9,6 +9,7 @@ const navItems = [
   { icon: Map, label: 'Journey', path: '/journey' },
   { icon: Heart, label: 'Check-in', path: '/checkin' },
   { icon: BookOpen, label: 'Library', path: '/resources' },
+  { icon: ScrollText, label: 'My Reflections', path: '/reflections' },
 ]
 
 export default function Sidebar() {

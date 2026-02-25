@@ -16,6 +16,7 @@ import ToolsPage from '@/pages/ToolsPage'
 import PointBPage from '@/pages/PointBPage'
 import RoadmapPage from '@/pages/RoadmapPage'
 import WorldPage from '@/pages/WorldPage'
+import ReflectionsPage from '@/pages/ReflectionsPage'
 
 // Redirects unauthenticated users to /auth.
 // Waits for profileLoaded before rendering so the onboarding check uses real
@@ -89,6 +90,7 @@ export default function App() {
         <Route path="/checkin" element={<ProtectedRoute><CheckInPage /></ProtectedRoute>} />
         <Route path="/resources" element={<ProtectedRoute><ResourcesPage /></ProtectedRoute>} />
         <Route path="/tools" element={<ProtectedRoute><ToolsPage /></ProtectedRoute>} />
+        <Route path="/reflections" element={<ProtectedRoute><ReflectionsPage /></ProtectedRoute>} />
       </Routes>
     </BrowserRouter>
   )
