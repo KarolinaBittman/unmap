@@ -118,12 +118,17 @@ export const useUserStore = create(
           // for a fresh account. This prevents old persisted mock/dev data from
           // showing pre-filled sliders to new users.
           updates.wheelScores = data.wheelScores ?? { career: 0, health: 0, relationships: 0, money: 0, growth: 0, fun: 0, environment: 0, purpose: 0 }
-          // Also protect journeyProgress from being downgraded by a stale DB value.
-          if (data.journeyProgress !== null) {
-            updates.journeyProgress = Math.max(data.journeyProgress ?? 0, get().journeyProgress ?? 0)
-          }
-          // Same guard as journeyProgress — never downgrade from a stale DB value.
-          if (data.pointBClarity !== null) updates.pointBClarity = Math.max(data.pointBClarity ?? 0, get().pointBClarity ?? 0)
+
+          // Derive a minimum journeyProgress from currentStage so it can never be
+          // lower than what the completed stages imply, even if syncProfile failed
+          // silently for some stages and the DB has a stale value.
+          const STAGE_PROGRESS_FLOOR = { 2: 17, 3: 33, 4: 50, 5: 67, 6: 83, 7: 100 }
+          const resolvedStage = updates.profile?.currentStage ?? get().profile.currentStage ?? 1
+          const progressFloor = STAGE_PROGRESS_FLOOR[resolvedStage] ?? (resolvedStage > 6 ? 100 : 0)
+          updates.journeyProgress = Math.max(data.journeyProgress ?? 0, get().journeyProgress ?? 0, progressFloor)
+
+          // Same guard — never downgrade pointBClarity from a stale DB value.
+          updates.pointBClarity = Math.max(data.pointBClarity ?? 0, get().pointBClarity ?? 0)
           if (data.onboardingAnswers) updates.onboardingAnswers  = data.onboardingAnswers
           if (data.blocksAnswers)     updates.blocksAnswers      = data.blocksAnswers
           if (data.identityAnswers)   updates.identityAnswers    = data.identityAnswers

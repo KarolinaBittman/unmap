@@ -3,6 +3,9 @@ import { STAGE_NAMES } from '@/lib/prompts'
 
 export default function JourneyProgressCard() {
   const { journeyProgress, profile } = useUserStore()
+  const allDone = profile.currentStage > 6
+  const displayStage = Math.min(profile.currentStage, 6)
+  const remaining = 6 - displayStage
 
   return (
     <div className="bg-gradient-to-br from-pink-400 via-purple-400 to-purple-600 rounded-2xl p-6 text-white shadow-sm hover:shadow-md transition-all duration-200">
@@ -18,7 +21,9 @@ export default function JourneyProgressCard() {
         </span>
       </div>
       <p className="text-white/80 text-sm mt-2">
-        Stage {profile.currentStage} · {STAGE_NAMES[profile.currentStage] ?? 'In Progress'}
+        {allDone
+          ? 'All stages complete'
+          : `Stage ${displayStage} · ${STAGE_NAMES[displayStage] ?? 'In Progress'}`}
       </p>
 
       {/* Progress bar */}
@@ -30,7 +35,9 @@ export default function JourneyProgressCard() {
       </div>
 
       <p className="text-white/60 text-xs mt-2">
-        {6 - profile.currentStage} stage{6 - profile.currentStage !== 1 ? 's' : ''} remaining
+        {allDone
+          ? 'All complete'
+          : `${remaining} stage${remaining !== 1 ? 's' : ''} remaining`}
       </p>
     </div>
   )

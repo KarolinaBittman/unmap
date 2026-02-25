@@ -26,10 +26,16 @@ export default function Dashboard() {
           {greeting()}, {profile.name}
         </h1>
         <p className="text-brand-muted text-sm mt-1">
-          Stage {profile.currentStage} of 6 ·{' '}
-          <span className="text-brand-primary font-medium">
-            {STAGE_NAMES[profile.currentStage]}
-          </span>
+          {profile.currentStage > 6 ? (
+            <span className="text-brand-primary font-medium">All stages complete</span>
+          ) : (
+            <>
+              Stage {profile.currentStage} of 6 ·{' '}
+              <span className="text-brand-primary font-medium">
+                {STAGE_NAMES[profile.currentStage]}
+              </span>
+            </>
+          )}
         </p>
       </div>
 

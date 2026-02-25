@@ -265,6 +265,8 @@ export default function PointBFlow() {
       setStep(nextStep)
       if (nextStep >= TOTAL_STEPS) {
         const clarity = calcPointBClarity(latestAnswers.current)
+        console.log('[PointB] advance — clarity calculated:', clarity)
+        console.log('[PointB] advance — answers used:', latestAnswers.current)
         setPointBAnswers(latestAnswers.current)
         setPointBClarity(clarity)
         // Save answers to stage_answers — point_b_clarity goes to profiles via syncProfile in handleContinue
@@ -292,6 +294,7 @@ export default function PointBFlow() {
     const updatedProfile = { ...profile, currentStage: nextStage }
     setProfile(updatedProfile)
     setJourneyProgress(nextProgress)
+    console.log('[PointB] handleContinue — pointBClarity being synced:', pointBClarity)
     // Include pointBClarity so it persists to profiles.point_b_clarity in Supabase
     if (user?.id) syncProfile(user.id, { ...updatedProfile, journeyProgress: nextProgress, pointBClarity })
     navigate('/')
