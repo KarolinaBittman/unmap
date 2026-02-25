@@ -122,7 +122,8 @@ export const useUserStore = create(
           if (data.journeyProgress !== null) {
             updates.journeyProgress = Math.max(data.journeyProgress ?? 0, get().journeyProgress ?? 0)
           }
-          if (data.pointBClarity !== null)   updates.pointBClarity   = data.pointBClarity
+          // Same guard as journeyProgress — never downgrade from a stale DB value.
+          if (data.pointBClarity !== null) updates.pointBClarity = Math.max(data.pointBClarity ?? 0, get().pointBClarity ?? 0)
           if (data.onboardingAnswers) updates.onboardingAnswers  = data.onboardingAnswers
           if (data.blocksAnswers)     updates.blocksAnswers      = data.blocksAnswers
           if (data.identityAnswers)   updates.identityAnswers    = data.identityAnswers

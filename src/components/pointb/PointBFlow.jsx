@@ -225,7 +225,7 @@ export default function PointBFlow() {
   const [reflectionError, setReflectionError] = useState(null)
 
   const navigate = useNavigate()
-  const { user, profile, setProfile, setPointBAnswers, setPointBClarity, journeyProgress, setJourneyProgress } = useUserStore()
+  const { user, profile, setProfile, setPointBAnswers, pointBClarity, setPointBClarity, journeyProgress, setJourneyProgress } = useUserStore()
 
   // Ref always holds the latest answers — avoids stale closures in async callbacks
   const latestAnswers = useRef(answers)
@@ -267,7 +267,8 @@ export default function PointBFlow() {
         const clarity = calcPointBClarity(latestAnswers.current)
         setPointBAnswers(latestAnswers.current)
         setPointBClarity(clarity)
-        if (user?.id) syncStageAnswers(user.id, 4, latestAnswers.current, { point_b_clarity: clarity })
+        // Save answers to stage_answers — point_b_clarity goes to profiles via syncProfile in handleContinue
+        if (user?.id) syncStageAnswers(user.id, 4, latestAnswers.current)
         fetchReflection()
       }
     })
@@ -275,7 +276,7 @@ export default function PointBFlow() {
 
   function goBack() {
     if (step === 0) {
-      navigate(-1)
+      navigate('/')
     } else {
       animateAndRun(() => setStep((s) => s - 1))
     }
@@ -291,7 +292,8 @@ export default function PointBFlow() {
     const updatedProfile = { ...profile, currentStage: nextStage }
     setProfile(updatedProfile)
     setJourneyProgress(nextProgress)
-    if (user?.id) syncProfile(user.id, { ...updatedProfile, journeyProgress: nextProgress })
+    // Include pointBClarity so it persists to profiles.point_b_clarity in Supabase
+    if (user?.id) syncProfile(user.id, { ...updatedProfile, journeyProgress: nextProgress, pointBClarity })
     navigate('/')
   }
 
@@ -308,10 +310,10 @@ export default function PointBFlow() {
               {!isReflection && (
                 <button
                   onClick={goBack}
-                  className="p-1 -ml-1 rounded-lg text-brand-muted hover:text-brand-text transition-colors duration-150"
-                  aria-label="Go back"
+                  className="flex items-center gap-1.5 text-sm font-medium text-brand-muted hover:text-brand-text transition-colors duration-150 -ml-1"
                 >
-                  <ArrowLeft size={18} />
+                  <ArrowLeft size={15} />
+                  Back
                 </button>
               )}
               <span className="font-heading font-bold text-brand-text tracking-tight">
@@ -390,16 +392,6 @@ export default function PointBFlow() {
             )}
           </div>
 
-          {/* Back link — all non-reflection steps, including section breaks */}
-          {!isReflection && (
-            <button
-              onClick={goBack}
-              className="mt-4 flex items-center gap-1.5 text-xs text-brand-muted hover:text-brand-text transition-colors duration-150 mx-auto"
-            >
-              <ArrowLeft size={13} />
-              Back
-            </button>
-          )}
 
         </div>
       </main>

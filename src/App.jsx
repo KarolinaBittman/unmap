@@ -12,6 +12,7 @@ import BlocksPage from '@/pages/BlocksPage'
 import IdentityPage from '@/pages/IdentityPage'
 import CheckInPage from '@/pages/CheckInPage'
 import ResourcesPage from '@/pages/ResourcesPage'
+import ToolsPage from '@/pages/ToolsPage'
 import PointBPage from '@/pages/PointBPage'
 import RoadmapPage from '@/pages/RoadmapPage'
 import WorldPage from '@/pages/WorldPage'
@@ -87,6 +88,7 @@ export default function App() {
         <Route path="/world" element={<ProtectedRoute><WorldPage /></ProtectedRoute>} />
         <Route path="/checkin" element={<ProtectedRoute><CheckInPage /></ProtectedRoute>} />
         <Route path="/resources" element={<ProtectedRoute><ResourcesPage /></ProtectedRoute>} />
+        <Route path="/tools" element={<ProtectedRoute><ToolsPage /></ProtectedRoute>} />
       </Routes>
     </BrowserRouter>
   )

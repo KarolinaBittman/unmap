@@ -1,26 +1,8 @@
-import {
-  RadarChart,
-  Radar,
-  PolarGrid,
-  PolarAngleAxis,
-  PolarRadiusAxis,
-  ResponsiveContainer,
-} from 'recharts'
 import { useUserStore } from '@/store/userStore'
+import WheelChart from './WheelChart'
 
 export default function WheelOfLife() {
   const { wheelScores } = useUserStore()
-
-  const data = [
-    { area: 'Career', score: wheelScores.career, fullMark: 10 },
-    { area: 'Health', score: wheelScores.health, fullMark: 10 },
-    { area: 'Relationships', score: wheelScores.relationships, fullMark: 10 },
-    { area: 'Money', score: wheelScores.money, fullMark: 10 },
-    { area: 'Growth', score: wheelScores.growth, fullMark: 10 },
-    { area: 'Fun', score: wheelScores.fun, fullMark: 10 },
-    { area: 'Environment', score: wheelScores.environment, fullMark: 10 },
-    { area: 'Purpose', score: wheelScores.purpose, fullMark: 10 },
-  ]
 
   const avg = (
     Object.values(wheelScores).reduce((a, b) => a + b, 0) /
@@ -38,29 +20,9 @@ export default function WheelOfLife() {
         </span>
       </div>
       <p className="text-xs text-brand-muted mb-4">Stage 1 snapshot</p>
-      <ResponsiveContainer width="100%" height={260}>
-        <RadarChart data={data} margin={{ top: 0, right: 20, bottom: 0, left: 20 }}>
-          <PolarGrid gridType="polygon" stroke="#E2DFF0" />
-          <PolarAngleAxis
-            dataKey="area"
-            tick={{ fill: '#8B85A0', fontSize: 11, fontFamily: 'Inter' }}
-          />
-          <PolarRadiusAxis
-            angle={90}
-            domain={[0, 10]}
-            tick={false}
-            axisLine={false}
-          />
-          <Radar
-            name="Life Score"
-            dataKey="score"
-            stroke="#0D9488"
-            fill="#0D9488"
-            fillOpacity={0.3}
-            dot={{ fill: '#0D9488', r: 4, strokeWidth: 0 }}
-          />
-        </RadarChart>
-      </ResponsiveContainer>
+      <div className="w-full aspect-square max-w-[280px] mx-auto">
+        <WheelChart scores={wheelScores} />
+      </div>
     </div>
   )
 }

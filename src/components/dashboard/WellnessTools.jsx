@@ -64,7 +64,7 @@ export default function WellnessTools() {
           Wellness Tools
         </h3>
         <button
-          onClick={() => navigate('/resources')}
+          onClick={() => navigate('/tools')}
           className="text-xs text-brand-primary font-medium hover:underline"
         >
           View all

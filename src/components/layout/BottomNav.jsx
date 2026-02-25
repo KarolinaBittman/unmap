@@ -6,7 +6,7 @@ const navItems = [
   { icon: LayoutDashboard, label: 'Dashboard', path: '/' },
   { icon: Map, label: 'Journey', path: '/journey' },
   { icon: Heart, label: 'Check-in', path: '/checkin' },
-  { icon: BookOpen, label: 'Resources', path: '/resources' },
+  { icon: BookOpen, label: 'Library', path: '/resources' },
 ]
 
 export default function BottomNav() {

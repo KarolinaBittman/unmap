@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { CheckCircle, ArrowRight } from 'lucide-react'
+import { CheckCircle, ArrowRight, ArrowLeft } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useUserStore } from '@/store/userStore'
 import WheelPreview from '@/components/dashboard/WheelPreview'
@@ -180,6 +180,15 @@ export default function WheelOfLifeSetup() {
 
   return (
     <div className="space-y-6 pb-20 md:pb-0">
+
+      {/* ── Back button ── */}
+      <button
+        onClick={() => navigate('/')}
+        className="flex items-center gap-1.5 text-sm font-medium text-brand-muted hover:text-brand-text transition-colors duration-150 -ml-1"
+      >
+        <ArrowLeft size={15} />
+        Back
+      </button>
 
       {/* ── Page header ── */}
       <div>

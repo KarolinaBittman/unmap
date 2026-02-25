@@ -180,7 +180,11 @@ export default function IdentityFlow() {
   }
 
   function goBack() {
-    animateAndRun(() => setStep((s) => s - 1))
+    if (step === 0) {
+      navigate('/')
+    } else {
+      animateAndRun(() => setStep((s) => s - 1))
+    }
   }
 
   function setAnswer(id, value) {
@@ -205,13 +209,13 @@ export default function IdentityFlow() {
         <div className="max-w-lg mx-auto">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-3">
-              {!isReflection && step > 0 && (
+              {!isReflection && (
                 <button
                   onClick={goBack}
-                  className="p-1 -ml-1 rounded-lg text-brand-muted hover:text-brand-text transition-colors duration-150"
-                  aria-label="Go back"
+                  className="flex items-center gap-1.5 text-sm font-medium text-brand-muted hover:text-brand-text transition-colors duration-150 -ml-1"
                 >
-                  <ArrowLeft size={18} />
+                  <ArrowLeft size={15} />
+                  Back
                 </button>
               )}
               <span className="font-heading font-bold text-brand-text tracking-tight">
@@ -278,16 +282,6 @@ export default function IdentityFlow() {
             )}
           </div>
 
-          {/* Back button — step 1+ only, not on reflection */}
-          {!isReflection && step > 0 && (
-            <button
-              onClick={goBack}
-              className="mt-4 flex items-center gap-1.5 text-xs text-brand-muted hover:text-brand-text transition-colors duration-150 mx-auto"
-            >
-              <ArrowLeft size={13} />
-              Back
-            </button>
-          )}
 
         </div>
       </main>
