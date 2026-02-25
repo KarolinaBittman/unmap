@@ -1,4 +1,5 @@
 import { BookOpen, FileText, Pencil, ExternalLink } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 
 const resources = [
   {
@@ -22,13 +23,18 @@ const resources = [
 ]
 
 export default function TodaysResources() {
+  const navigate = useNavigate()
+
   return (
     <div className="bg-white rounded-2xl p-6 shadow-sm border border-brand-border">
       <div className="flex items-center justify-between mb-4">
         <h3 className="font-heading font-semibold text-brand-text">
           Today's Resources
         </h3>
-        <button className="text-xs text-brand-primary font-medium hover:underline">
+        <button
+          onClick={() => navigate('/resources')}
+          className="text-xs text-brand-primary font-medium hover:underline"
+        >
           View all
         </button>
       </div>
@@ -37,6 +43,7 @@ export default function TodaysResources() {
         {resources.map(({ title, type, framework, Icon }) => (
           <div
             key={title}
+            onClick={() => navigate('/resources')}
             className="flex items-start gap-3 p-3 bg-brand-surface rounded-xl hover:shadow-md transition-all duration-200 cursor-pointer group"
           >
             <div className="w-8 h-8 bg-brand-primary/10 rounded-lg flex items-center justify-center shrink-0 mt-0.5">

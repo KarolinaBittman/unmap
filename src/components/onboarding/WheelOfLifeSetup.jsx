@@ -6,6 +6,14 @@ import { useUserStore } from '@/store/userStore'
 import WheelPreview from '@/components/dashboard/WheelPreview'
 import { syncWheelScores, syncProfile } from '@/lib/db'
 
+const NEXT_STAGE_INFO = {
+  2: { name: 'What Happened to You', desc: "Understand the roots of what's keeping you stuck. Name the pattern without diagnosing it." },
+  3: { name: 'Who Are You', desc: "Discover the identity underneath the roles you've been playing." },
+  4: { name: 'Where Do You Want to Be', desc: 'Map your 1-year and 3-year vision. Uncensored.' },
+  5: { name: 'How Do You Get There', desc: 'Build your career vehicle and your financial runway.' },
+  6: { name: 'Where in the World', desc: 'Find the places that match your values, budget, and freedom priorities.' },
+}
+
 const AREAS = [
   { id: 'career',        label: 'Career',        hint: 'Work, growth, income, satisfaction' },
   { id: 'health',        label: 'Health',        hint: 'Energy, fitness, sleep, nourishment' },
@@ -123,6 +131,9 @@ export default function WheelOfLifeSetup() {
 
   // ── Stage 1 completion screen ─────────────────────────────────────────────
   if (saved) {
+    const nextStage = profile.currentStage  // updated synchronously by handleSave
+    const stageData = NEXT_STAGE_INFO[nextStage]
+
     return (
       <div className="max-w-lg mx-auto pt-12 pb-20 md:pb-0 space-y-6 text-center">
         <div className="flex justify-center">
@@ -139,25 +150,28 @@ export default function WheelOfLifeSetup() {
             Your Wheel of Life is saved.
           </h2>
           <p className="text-brand-muted text-sm mt-2 max-w-sm mx-auto">
-            Now you have a clear snapshot of where you are. Stage 2 is unlocked — it's time to look at what got you here.
+            Now you have a clear snapshot of where you are.{' '}
+            {stageData
+              ? `Stage ${nextStage} is unlocked — time to keep going.`
+              : 'Head back to your dashboard to continue your journey.'}
           </p>
         </div>
 
-        <div className="bg-brand-surface rounded-2xl p-5 border border-brand-border">
-          <p className="text-[11px] font-semibold text-brand-primary uppercase tracking-widest mb-1">
-            Stage 2 — Now unlocked
-          </p>
-          <p className="font-heading font-semibold text-brand-text">What Happened to You</p>
-          <p className="text-xs text-brand-muted mt-1">
-            Understand the roots of what's keeping you stuck. Name the pattern without diagnosing it.
-          </p>
-        </div>
+        {stageData && (
+          <div className="bg-brand-surface rounded-2xl p-5 border border-brand-border">
+            <p className="text-[11px] font-semibold text-brand-primary uppercase tracking-widest mb-1">
+              Stage {nextStage} — Now unlocked
+            </p>
+            <p className="font-heading font-semibold text-brand-text">{stageData.name}</p>
+            <p className="text-xs text-brand-muted mt-1">{stageData.desc}</p>
+          </div>
+        )}
 
         <button
           onClick={() => navigate('/')}
           className="w-full flex items-center justify-center gap-2 bg-brand-primary text-white py-4 rounded-xl font-heading font-semibold text-base hover:bg-brand-primary/90 transition-all duration-200 shadow-sm hover:shadow-md"
         >
-          Continue to Stage 2
+          {stageData ? `Continue to Stage ${nextStage}` : 'Back to Dashboard'}
           <ArrowRight size={18} />
         </button>
       </div>

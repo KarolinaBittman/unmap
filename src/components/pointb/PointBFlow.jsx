@@ -1,24 +1,48 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
+import { cn } from '@/lib/utils'
 import PointBReflectionCard from './PointBReflectionCard'
 import QuestionCard from '@/components/onboarding/QuestionCard'
 import { useUserStore } from '@/store/userStore'
 import { generatePointBReflection } from '@/lib/claude'
 import { syncStageAnswers, syncProfile } from '@/lib/db'
 
-// 13 items total (3 section breaks + 10 questions). Reflection at step 13+.
-// Step 0  : section break — 1 Year
+// ── Section metadata ─────────────────────────────────────────────────────────
+const SECTIONS = [
+  { label: 'One Year',     maxStep: 4 },
+  { label: 'Three Years',  maxStep: 9 },
+  { label: 'Uncensored',   maxStep: 12 },
+]
+
+function getActiveSection(step) {
+  if (step <= 4)  return 0
+  if (step <= 9)  return 1
+  return 2
+}
+
+// Within-section question progress (null on section break steps)
+function getQuestionProgress(step) {
+  if (step === 0 || step === 5 || step === 10) return null
+  if (step <= 4)  return { current: step,      total: 4 }
+  if (step <= 9)  return { current: step - 5,  total: 4 }
+  return           { current: step - 10, total: 2 }
+}
+
+// ── Content ──────────────────────────────────────────────────────────────────
+// 13 items total: 3 section breaks + 10 questions. Reflection at step 13+.
+// Step 0   : section break — One Year
 // Steps 1–4 : 1-year questions
-// Step 5  : section break — 3 Years
+// Step 5   : section break — Three Years
 // Steps 6–9 : 3-year questions
-// Step 10 : section break — Uncensored
+// Step 10  : section break — Uncensored
 // Steps 11–12 : uncensored questions
 
 const ITEMS = [
-  // ── 1 Year ──
+  // ── One Year ──
   {
     type: 'section-break',
+    sectionIndex: 0,
     heading: 'One year from now.',
     body: "It's exactly one year from today. You made the moves, things shifted. Picture what your life actually looks like.",
     cta: "Let's see it →",
@@ -55,10 +79,13 @@ const ITEMS = [
     type: 'text',
     placeholder: 'Write freely…',
   },
-  // ── 3 Years ──
+
+  // ── Three Years ──
   {
     type: 'section-break',
+    sectionIndex: 1,
     heading: 'Three years from now.',
+    subtitle: 'You mapped your first year. Now remove the ceiling.',
     body: "Same questions. But you've had three years. Things compounded. Go bigger.",
     cta: 'Go bigger →',
   },
@@ -94,10 +121,13 @@ const ITEMS = [
     type: 'text',
     placeholder: 'Write freely…',
   },
+
   // ── Uncensored ──
   {
     type: 'section-break',
+    sectionIndex: 2,
     heading: 'Now, uncensored.',
+    subtitle: 'Two questions. No editing allowed.',
     body: "No edits. No 'but that's not realistic.' No qualifiers. Just the truth — the version you usually talk yourself out of.",
     cta: 'Tell the truth →',
   },
@@ -140,6 +170,52 @@ function calcPointBClarity(answers) {
   return Math.round((total / (ANSWER_FIELDS.length * 3)) * 100)
 }
 
+// ── Section break card — full-screen moment with delayed CTA ─────────────────
+function SectionBreakCard({ item, onAdvance }) {
+  const [ctaReady, setCtaReady] = useState(false)
+
+  useEffect(() => {
+    const t = setTimeout(() => setCtaReady(true), 400)
+    return () => clearTimeout(t)
+  }, [])
+
+  return (
+    <div className="flex flex-col items-center justify-center text-center min-h-[58vh] space-y-6 px-2">
+      <span className="text-[11px] font-semibold text-brand-muted uppercase tracking-widest">
+        Chapter {item.sectionIndex + 1} of 3
+      </span>
+
+      <h2 className="font-heading font-bold text-4xl md:text-5xl text-brand-text leading-tight max-w-xs">
+        {item.heading}
+      </h2>
+
+      {item.subtitle && (
+        <p className="text-brand-primary text-sm font-semibold">{item.subtitle}</p>
+      )}
+
+      <p className="text-brand-muted text-base leading-relaxed max-w-sm">
+        {item.body}
+      </p>
+
+      <div
+        className="pt-2 transition-all duration-500 ease-out"
+        style={{
+          opacity:   ctaReady ? 1 : 0,
+          transform: ctaReady ? 'translateY(0)' : 'translateY(10px)',
+        }}
+      >
+        <button
+          onClick={ctaReady ? onAdvance : undefined}
+          className="bg-brand-primary text-white px-10 py-4 rounded-xl font-medium text-base hover:bg-brand-primary/90 transition-all duration-200 shadow-sm hover:shadow-md"
+        >
+          {item.cta}
+        </button>
+      </div>
+    </div>
+  )
+}
+
+// ── Main flow ─────────────────────────────────────────────────────────────────
 export default function PointBFlow() {
   const [step, setStep] = useState(0)
   const [answers, setAnswers] = useState(INITIAL_ANSWERS)
@@ -155,10 +231,12 @@ export default function PointBFlow() {
   const latestAnswers = useRef(answers)
   latestAnswers.current = answers
 
-  const isReflection = step >= TOTAL_STEPS
-  const currentItem = !isReflection ? ITEMS[step] : null
-  const isSectionBreak = currentItem?.type === 'section-break'
-  const progress = isReflection ? 100 : (step / TOTAL_STEPS) * 100
+  const isReflection    = step >= TOTAL_STEPS
+  const currentItem     = !isReflection ? ITEMS[step] : null
+  const isSectionBreak  = currentItem?.type === 'section-break'
+  const progress        = isReflection ? 100 : (step / TOTAL_STEPS) * 100
+  const activeSection   = isReflection ? SECTIONS.length : getActiveSection(step)
+  const questionProgress = !isReflection ? getQuestionProgress(step) : null
 
   function animateAndRun(fn) {
     setVisible(false)
@@ -196,7 +274,11 @@ export default function PointBFlow() {
   }
 
   function goBack() {
-    animateAndRun(() => setStep((s) => s - 1))
+    if (step === 0) {
+      navigate(-1)
+    } else {
+      animateAndRun(() => setStep((s) => s - 1))
+    }
   }
 
   function setAnswer(id, value) {
@@ -204,7 +286,7 @@ export default function PointBFlow() {
   }
 
   function handleContinue() {
-    const nextStage = Math.max(profile.currentStage ?? 0, 5)
+    const nextStage    = Math.max(profile.currentStage ?? 0, 5)
     const nextProgress = Math.max(journeyProgress ?? 0, 67)
     const updatedProfile = { ...profile, currentStage: nextStage }
     setProfile(updatedProfile)
@@ -216,12 +298,14 @@ export default function PointBFlow() {
   return (
     <div className="min-h-screen bg-brand-bg flex flex-col">
 
-      {/* ── Top bar: logo + progress ── */}
+      {/* ── Top bar: logo + progress + section pills ── */}
       <header className="shrink-0 px-6 pt-6 pb-4">
         <div className="max-w-lg mx-auto">
+
+          {/* Row: back arrow | logo | step counter */}
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-3">
-              {!isReflection && step > 0 && (
+              {!isReflection && (
                 <button
                   onClick={goBack}
                   className="p-1 -ml-1 rounded-lg text-brand-muted hover:text-brand-text transition-colors duration-150"
@@ -234,18 +318,41 @@ export default function PointBFlow() {
                 unmap
               </span>
             </div>
-            {!isReflection && !isSectionBreak && (
+            {!isReflection && questionProgress && (
               <span className="text-xs text-brand-muted tabular-nums">
-                {step} / {TOTAL_STEPS - 3}
+                {questionProgress.current} / {questionProgress.total}
               </span>
             )}
           </div>
+
+          {/* Progress bar */}
           <div className="h-1 bg-brand-border rounded-full overflow-hidden">
             <div
               className="h-full bg-brand-primary rounded-full transition-all duration-500 ease-out"
               style={{ width: `${progress}%` }}
             />
           </div>
+
+          {/* Section pills */}
+          {!isReflection && (
+            <div className="flex items-center justify-center gap-2 mt-3">
+              {SECTIONS.map((s, i) => (
+                <div
+                  key={s.label}
+                  className={cn(
+                    'px-3 py-1 rounded-full text-[11px] font-semibold transition-all duration-300',
+                    i === activeSection
+                      ? 'bg-brand-primary text-white'
+                      : i < activeSection
+                        ? 'bg-brand-primary/15 text-brand-primary'
+                        : 'bg-brand-border text-brand-muted',
+                  )}
+                >
+                  {s.label}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </header>
 
@@ -255,7 +362,7 @@ export default function PointBFlow() {
 
           <div
             style={{
-              opacity: visible ? 1 : 0,
+              opacity:   visible ? 1 : 0,
               transform: visible ? 'translateY(0)' : 'translateY(8px)',
               transition: 'opacity 180ms ease, transform 180ms ease',
             }}
@@ -271,20 +378,8 @@ export default function PointBFlow() {
                 uncensoredTruth={latestAnswers.current.uncensored_truth}
               />
             ) : isSectionBreak ? (
-              <div className="bg-white rounded-2xl border border-brand-border shadow-sm p-8 space-y-5">
-                <h2 className="font-heading font-bold text-2xl text-brand-text">
-                  {currentItem.heading}
-                </h2>
-                <p className="text-brand-muted text-sm leading-relaxed">
-                  {currentItem.body}
-                </p>
-                <button
-                  onClick={advance}
-                  className="w-full bg-brand-primary text-white py-3.5 rounded-xl font-medium hover:bg-brand-primary/90 transition-all duration-200"
-                >
-                  {currentItem.cta}
-                </button>
-              </div>
+              // key resets the fade-in timer each time we hit a new section break
+              <SectionBreakCard key={step} item={currentItem} onAdvance={advance} />
             ) : (
               <QuestionCard
                 question={currentItem}
@@ -295,8 +390,8 @@ export default function PointBFlow() {
             )}
           </div>
 
-          {/* Back button — step 1+ only, not on reflection or first section break */}
-          {!isReflection && step > 0 && (
+          {/* Back link — all non-reflection steps, including section breaks */}
+          {!isReflection && (
             <button
               onClick={goBack}
               className="mt-4 flex items-center gap-1.5 text-xs text-brand-muted hover:text-brand-text transition-colors duration-150 mx-auto"
