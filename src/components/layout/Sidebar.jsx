@@ -57,12 +57,12 @@ export default function Sidebar() {
       {/* Stage progress */}
       <div className="px-6 pb-4">
         <p className="text-xs text-brand-muted mb-2">
-          Stage {profile.currentStage} of 6
+          {profile.currentStage > 6 ? 'All stages complete' : `Stage ${profile.currentStage} of 6`}
         </p>
         <div className="bg-brand-border rounded-full h-1.5">
           <div
             className="bg-brand-primary rounded-full h-1.5 transition-all duration-500"
-            style={{ width: `${(profile.currentStage / 6) * 100}%` }}
+            style={{ width: `${Math.min((profile.currentStage / 6) * 100, 100)}%` }}
           />
         </div>
       </div>

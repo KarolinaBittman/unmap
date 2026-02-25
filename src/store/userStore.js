@@ -127,8 +127,12 @@ export const useUserStore = create(
           const progressFloor = STAGE_PROGRESS_FLOOR[resolvedStage] ?? (resolvedStage > 6 ? 100 : 0)
           updates.journeyProgress = Math.max(data.journeyProgress ?? 0, get().journeyProgress ?? 0, progressFloor)
 
-          // Same guard — never downgrade pointBClarity from a stale DB value.
-          updates.pointBClarity = Math.max(data.pointBClarity ?? 0, get().pointBClarity ?? 0)
+          // Only update pointBClarity when DB has a real value. If DB has null
+          // (write never landed), leave the Zustand-persisted localStorage value
+          // untouched so a failed syncProfile can't wipe a valid local value.
+          if (data.pointBClarity != null) {
+            updates.pointBClarity = Math.max(data.pointBClarity, get().pointBClarity ?? 0)
+          }
           if (data.onboardingAnswers) updates.onboardingAnswers  = data.onboardingAnswers
           if (data.blocksAnswers)     updates.blocksAnswers      = data.blocksAnswers
           if (data.identityAnswers)   updates.identityAnswers    = data.identityAnswers
