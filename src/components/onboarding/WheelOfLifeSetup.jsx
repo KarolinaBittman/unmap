@@ -157,6 +157,19 @@ export default function WheelOfLifeSetup() {
           </p>
         </div>
 
+        {/* ── Wheel celebration ── */}
+        <div className="flex flex-col items-center gap-2">
+          <p className="text-[11px] font-semibold text-brand-muted uppercase tracking-widest">
+            Your snapshot
+          </p>
+          <WheelPreview scores={scores} height={280} />
+          <p className="text-sm font-semibold text-brand-primary">
+            Average score:{' '}
+            {(Object.values(scores).reduce((a, b) => a + (b ?? 0), 0) / AREAS.length).toFixed(1)}{' '}
+            / 10
+          </p>
+        </div>
+
         {stageData && (
           <div className="bg-brand-surface rounded-2xl p-5 border border-brand-border">
             <p className="text-[11px] font-semibold text-brand-primary uppercase tracking-widest mb-1">
