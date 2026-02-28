@@ -1,6 +1,16 @@
 import { CheckCircle, Lock, ArrowRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
+// Unique pastel background per stage
+const STAGE_BG = {
+  1: '#DBEAFE', // soft blue
+  2: '#FFE4E1', // soft coral
+  3: '#EDE9FE', // soft lavender
+  4: '#DCFCE7', // soft mint
+  5: '#FEF9C3', // soft yellow
+  6: '#CCFBF1', // soft teal
+}
+
 // status: 'completed' | 'current' | 'locked'
 export default function StageCard({ stage, status, onClick }) {
   const isCompleted = status === 'completed'
@@ -8,19 +18,21 @@ export default function StageCard({ stage, status, onClick }) {
   const isLocked = status === 'locked'
   const isClickable = !isLocked && !!onClick
 
+  const stageBg = STAGE_BG[stage.id]
+
   return (
     <div
       onClick={isClickable ? onClick : undefined}
       role={isClickable ? 'button' : undefined}
       tabIndex={isClickable ? 0 : undefined}
       onKeyDown={isClickable ? (e) => e.key === 'Enter' && onClick() : undefined}
+      style={!isLocked ? { backgroundColor: stageBg } : undefined}
       className={cn(
         'rounded-2xl p-5 flex flex-col gap-3 transition-all duration-200',
-        isCompleted && 'bg-brand-success/10 border border-brand-success/40',
-        isCurrent && 'bg-brand-surface border-2 border-brand-primary shadow-sm',
+        isCompleted && 'border border-brand-border/60',
+        isCurrent && 'border-2 border-brand-primary shadow-sm',
         isLocked && 'bg-white border border-brand-border opacity-55',
         isClickable && 'cursor-pointer hover:shadow-md',
-        isCurrent && 'animate-pulse-subtle',
       )}
     >
       {/* Status icon + stage number */}
@@ -50,14 +62,14 @@ export default function StageCard({ stage, status, onClick }) {
         {stage.name}
       </p>
 
-      {/* Current badge */}
+      {/* Status badge */}
       {isCurrent && (
-        <span className="inline-block text-[10px] font-semibold text-brand-primary bg-brand-primary/10 px-2 py-0.5 rounded-full w-fit">
+        <span className="inline-block text-[10px] font-semibold text-brand-primary bg-brand-primary/15 px-2 py-0.5 rounded-full w-fit">
           In progress
         </span>
       )}
       {isCompleted && (
-        <span className="inline-block text-[10px] font-semibold text-brand-success bg-brand-success/10 px-2 py-0.5 rounded-full w-fit">
+        <span className="inline-block text-[10px] font-semibold text-brand-success bg-brand-success/20 px-2 py-0.5 rounded-full w-fit">
           Complete
         </span>
       )}

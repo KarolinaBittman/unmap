@@ -5,7 +5,7 @@ import Dashboard from '@/components/dashboard/Dashboard'
 
 export default function DashboardPage() {
   return (
-    <div className="flex min-h-screen bg-brand-bg">
+    <div className="flex min-h-screen" style={{ background: 'linear-gradient(135deg, #F0EEFF 0%, #EEFAF6 100%)' }}>
       {/* Desktop sidebar */}
       <div className="hidden md:block">
         <Sidebar />
