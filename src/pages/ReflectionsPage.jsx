@@ -6,6 +6,8 @@ import Sidebar from '@/components/layout/Sidebar'
 import Navbar from '@/components/layout/Navbar'
 import BottomNav from '@/components/layout/BottomNav'
 import { cn } from '@/lib/utils'
+import { parseReflection } from '@/lib/parseReflection'
+import FrameworkPills from '@/components/FrameworkPills'
 
 // Stage labels including stage 0 (onboarding reflection)
 const STAGE_LABELS = {
@@ -29,6 +31,7 @@ function formatDate(isoString) {
 }
 
 function ReflectionEntry({ reflection, isLatest }) {
+  const { text, frameworks } = parseReflection(reflection.content)
   return (
     <div
       className={cn(
@@ -43,8 +46,9 @@ function ReflectionEntry({ reflection, isLatest }) {
         {reflection.cycle > 1 && ` · Cycle ${reflection.cycle}`}
       </p>
       <p className="font-emotional italic text-brand-text leading-[1.85] text-base whitespace-pre-line">
-        {reflection.content}
+        {text}
       </p>
+      <FrameworkPills frameworks={frameworks} />
     </div>
   )
 }

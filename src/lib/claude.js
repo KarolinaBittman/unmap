@@ -49,7 +49,9 @@ export async function generateOnboardingReflection(answers) {
 
 TASK: Write a 3-4 sentence personalised reflection based on the user's Stage 1 answers. Reflect back what they actually said — use their words, not paraphrases. Note any tension between their life satisfaction score and their Wheel of Life scores if both are available. The final sentence opens a door gently — not advice, not a question, just an acknowledgement of what's possible.
 
-OUTPUT FORMAT: 3-4 sentences. Plain text only. No bullet points. No labels. No markdown. No intro phrase like "Here is your reflection:".`
+OUTPUT FORMAT: 3-4 sentences of reflection. Plain text only. No bullet points. No labels. No markdown. No intro phrase like "Here is your reflection:".
+Then on the very last line, with no blank line before it, write exactly:
+---FRAMEWORKS: [2–4 psychological or philosophical frameworks you actually drew on, comma-separated, no period]`
 
   const userMessage = `My Stage 1 answers:
 - What brought me here: "${answers.reason || 'not answered'}"
@@ -75,7 +77,9 @@ export async function generateBlocksReflection(answers) {
 
 TASK: Write a 3-4 sentence reflection that names the pattern behind what's blocking this user. Use their actual words — especially from the "inner voice" answer. Draw on what you know about their full profile (if earlier stages are complete) to name the thread connecting their blocks to their larger story. Name what you see clearly and gently, without diagnosing or labelling it clinically.
 
-OUTPUT FORMAT: 3-4 sentences. Plain text only. No bullet points. No labels. No markdown. No intro phrase.`
+OUTPUT FORMAT: 3-4 sentences of reflection. Plain text only. No bullet points. No labels. No markdown. No intro phrase.
+Then on the very last line, with no blank line before it, write exactly:
+---FRAMEWORKS: [2–4 psychological or philosophical frameworks you actually drew on, comma-separated, no period]`
 
   const userMessage = `My Stage 2 answers:
 - What stops me when I imagine a big change: "${answers.blocker || 'not answered'}"
@@ -111,7 +115,9 @@ TASK: Write a 4-5 sentence reflection that names who this person actually is. Ad
 
 Cross-reference with earlier stage answers where relevant — blocks and identity are often deeply connected.
 
-OUTPUT FORMAT: 4-5 sentences. Plain text only. No bullet points. No labels. No markdown. No intro phrase.`
+OUTPUT FORMAT: 4-5 sentences of reflection. Plain text only. No bullet points. No labels. No markdown. No intro phrase.
+Then on the very last line, with no blank line before it, write exactly:
+---FRAMEWORKS: [2–4 psychological or philosophical frameworks you actually drew on, comma-separated, no period]`
 
   const userMessage = `My Stage 3 answers:
 - My top 5 values: ${values}
@@ -148,7 +154,9 @@ TASK: Write a 4-5 sentence Point B reflection that does three things in order:
 
 If earlier stages reveal relevant identity or blocks context, let that inform the reflection without making it the focus.
 
-OUTPUT FORMAT: 4-5 sentences. Plain text only. No bullet points. No labels. No markdown. No intro phrase.`
+OUTPUT FORMAT: 4-5 sentences of reflection. Plain text only. No bullet points. No labels. No markdown. No intro phrase.
+Then on the very last line, with no blank line before it, write exactly:
+---FRAMEWORKS: [2–4 psychological or philosophical frameworks you actually drew on, comma-separated, no period]`
 
   const userMessage = `My Stage 4 answers:
 
@@ -188,7 +196,9 @@ TASK: Write a 4-5 sentence reflection that does three things in order:
 2. Name the financial gap concretely — use their actual numbers and currency. Compare monthly expenses to freedom income. Factor in savings runway to say something real about their window for action.
 3. Name their first move and cut through what's actually blocking it — use their exact words from both the step and the blocker. Say what you see beneath the surface reason, informed by what you know about their blocks (Stage 2).
 
-OUTPUT FORMAT: 4-5 sentences. Plain text only. No bullet points. No labels. No markdown. No intro phrase.`
+OUTPUT FORMAT: 4-5 sentences of reflection. Plain text only. No bullet points. No labels. No markdown. No intro phrase.
+Then on the very last line, with no blank line before it, write exactly:
+---FRAMEWORKS: [2–4 psychological or philosophical frameworks you actually drew on, comma-separated, no period]`
 
   const userMessage = `My Stage 5 answers:
 
@@ -241,7 +251,9 @@ FORMAT (use exactly this structure, plain text):
 
 [One closing sentence about what their answers collectively point to — not advice, just an observation.]
 
-OUTPUT FORMAT: Plain text only. No markdown headers. No asterisks. No bullet points beyond the numbered list above. No intro phrase.`
+OUTPUT FORMAT: Plain text only. No markdown headers. No asterisks. No bullet points beyond the numbered list above. No intro phrase.
+Then on the very last line, with no blank line before it, write exactly:
+---FRAMEWORKS: [2–4 frameworks or concepts that informed your matching, comma-separated, no period]`
 
   const userMessage = `My Stage 6 answers:
 

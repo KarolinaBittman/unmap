@@ -1,5 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { Map, RefreshCw, AlertCircle } from 'lucide-react'
+import { parseReflection } from '@/lib/parseReflection'
+import FrameworkPills from '@/components/FrameworkPills'
 
 const NEXT_STEPS = [
   { label: "You've mapped your career path and first move", active: true },
@@ -53,6 +55,7 @@ export default function RoadmapReflectionCard({
   firstMoveBlocker,
 }) {
   const navigate = useNavigate()
+  const { text: reflectionText, frameworks } = parseReflection(reflection)
   return (
     <div className="space-y-4">
 
@@ -103,8 +106,9 @@ export default function RoadmapReflectionCard({
       {reflection && !loading && (
         <div className="bg-brand-surface rounded-2xl p-6 border border-brand-border">
           <p className="font-emotional italic text-brand-text leading-[1.8] text-base whitespace-pre-line">
-            {reflection}
+            {reflectionText}
           </p>
+          <FrameworkPills frameworks={frameworks} />
         </div>
       )}
 

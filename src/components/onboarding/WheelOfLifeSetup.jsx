@@ -27,7 +27,7 @@ const AREAS = [
 
 // Gradient: coral/pink → indigo → cyan → teal primary
 const SCORED_GRADIENT =
-  'linear-gradient(to right, #F093FB 0%, #818CF8 33%, #22D3EE 66%, #0D9488 100%)'
+  'linear-gradient(to right, #F0ABFC 0%, #818CF8 40%, #22D3EE 70%, #2DD4BF 100%)'
 const UNSCORED_TRACK = '#E2DFF0'
 const THUMB_W = 22 // px — must match CSS (.wheel-slider thumb width)
 

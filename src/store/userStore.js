@@ -1,6 +1,13 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { loadUserData } from '@/lib/db'
+import { loadUserData, syncProfile } from '@/lib/db'
+
+// Progress is always derived from currentStage — never trust a stored number.
+// This is the single source of truth for both local state and Supabase corrections.
+const STAGE_PROGRESS_FLOOR = { 1: 0, 2: 17, 3: 33, 4: 50, 5: 67, 6: 83, 7: 100 }
+function progressForStage(stage) {
+  return STAGE_PROGRESS_FLOOR[stage] ?? (stage > 6 ? 100 : 0)
+}
 
 export const useUserStore = create(
   persist(
@@ -119,13 +126,21 @@ export const useUserStore = create(
           // showing pre-filled sliders to new users.
           updates.wheelScores = data.wheelScores ?? { career: 0, health: 0, relationships: 0, money: 0, growth: 0, fun: 0, environment: 0, purpose: 0 }
 
-          // Derive a minimum journeyProgress from currentStage so it can never be
-          // lower than what the completed stages imply, even if syncProfile failed
-          // silently for some stages and the DB has a stale value.
-          const STAGE_PROGRESS_FLOOR = { 2: 17, 3: 33, 4: 50, 5: 67, 6: 83, 7: 100 }
+          // Always derive journeyProgress from currentStage — never trust the stored
+          // number, which can be stale (e.g. stuck at 17% even after all stages done).
+          // The floor map is the single source of truth.
           const resolvedStage = updates.profile?.currentStage ?? get().profile.currentStage ?? 1
-          const progressFloor = STAGE_PROGRESS_FLOOR[resolvedStage] ?? (resolvedStage > 6 ? 100 : 0)
-          updates.journeyProgress = Math.max(data.journeyProgress ?? 0, get().journeyProgress ?? 0, progressFloor)
+          const correctProgress = progressForStage(resolvedStage)
+          updates.journeyProgress = correctProgress
+
+          // One-time migration: if the DB has a stale progress value, patch it now.
+          // This silently corrects all existing users without requiring a manual fix.
+          const storedProgress = data.journeyProgress ?? 0
+          if (storedProgress < correctProgress && resolvedStage >= 2) {
+            const profileToSync = updates.profile ?? get().profile
+            syncProfile(userId, { ...profileToSync, journeyProgress: correctProgress })
+              .catch(() => {}) // fire-and-forget, non-blocking
+          }
 
           // Only update pointBClarity when DB has a real value. If DB has null
           // (write never landed), leave the Zustand-persisted localStorage value

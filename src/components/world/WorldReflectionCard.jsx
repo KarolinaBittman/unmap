@@ -1,5 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { Globe2, RefreshCw, AlertCircle } from 'lucide-react'
+import { parseReflection } from '@/lib/parseReflection'
+import FrameworkPills from '@/components/FrameworkPills'
 
 const NEXT_STEPS = [
   { label: "You've found your top 3 location matches", active: true },
@@ -54,6 +56,7 @@ export default function WorldReflectionCard({
   topPriorities,
 }) {
   const navigate = useNavigate()
+  const { text: reflectionText, frameworks } = parseReflection(reflection)
   return (
     <div className="space-y-4">
 
@@ -100,8 +103,9 @@ export default function WorldReflectionCard({
       {reflection && !loading && (
         <div className="bg-brand-surface rounded-2xl p-6 border border-brand-border">
           <p className="text-brand-text leading-[1.85] text-sm whitespace-pre-line">
-            {reflection}
+            {reflectionText}
           </p>
+          <FrameworkPills frameworks={frameworks} />
         </div>
       )}
 
