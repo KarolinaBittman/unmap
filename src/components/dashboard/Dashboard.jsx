@@ -1,6 +1,6 @@
 import JourneyProgressCard from './JourneyProgressCard'
 import PointBClarityCard from './PointBClarityCard'
-import TodaysMoodCard from './TodaysMoodCard'
+import YourNextMoveCard from './YourNextMoveCard'
 import WheelOfLife from './WheelOfLife'
 import EmotionalBaseline from './EmotionalBaseline'
 import JourneyStages from './JourneyStages'
@@ -44,7 +44,7 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
         <JourneyProgressCard />
         <PointBClarityCard />
-        <TodaysMoodCard />
+        <YourNextMoveCard />
       </div>
 
       {/* Charts */}
