@@ -1,57 +1,32 @@
 import { useState } from 'react'
-import { Wind, BookMarked, Waves, ArrowRight, ChevronUp } from 'lucide-react'
+import {
+  Wind, BookMarked, Waves, Heart, Eye, PenLine,
+  Clock, RefreshCw, Focus, ArrowRight, ChevronUp,
+} from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
+import { useUserStore } from '@/store/userStore'
+import { getStageResources } from '@/lib/resources'
 
-const tools = [
-  {
-    title: 'Box Breathing',
-    description: '4-4-4-4 technique for nervous system reset',
-    Icon: Wind,
-    duration: '5 min',
-    color: 'text-teal-500',
-    bg: 'bg-teal-50',
-    instructions: [
-      'Breathe in through your nose for 4 counts.',
-      'Hold for 4 counts.',
-      'Exhale through your mouth for 4 counts.',
-      'Hold for 4 counts.',
-      'Repeat for 4 cycles. Slows the nervous system fast.',
-    ],
-  },
-  {
-    title: 'Morning Pages',
-    description: 'Stream-of-consciousness journaling',
-    Icon: BookMarked,
-    duration: '20 min',
-    color: 'text-brand-secondary',
-    bg: 'bg-pink-50',
-    instructions: [
-      'First thing in the morning, before coffee or your phone.',
-      "Write 3 pages of whatever comes. Don't edit. Don't stop.",
-      "When you're done, close the notebook. You don't have to read it.",
-      'Do it every morning for one week.',
-    ],
-  },
-  {
-    title: 'Body Scan',
-    description: 'Grounding through somatic awareness',
-    Icon: Waves,
-    duration: '10 min',
-    color: 'text-brand-primary',
-    bg: 'bg-brand-surface',
-    instructions: [
-      'Sit or lie down somewhere quiet.',
-      'Start at the crown of your head. Notice sensation without judging.',
-      'Slowly move attention down — face, neck, shoulders, chest, belly, legs, feet.',
-      'If you find tension, breathe into it. Then let it go.',
-      'Use a timer. 10 minutes is enough.',
-    ],
-  },
-]
+// Map icon name string (from resources.js) → lucide component
+const ICON_MAP = {
+  Wind,
+  BookMarked,
+  Waves,
+  Heart,
+  Eye,
+  PenLine,
+  Clock,
+  RefreshCw,
+  Focus,
+  // Footprints isn't in all lucide versions — fall back gracefully
+  Footprints: Waves,
+}
 
 export default function WellnessTools() {
   const [expanded, setExpanded] = useState(null)
   const navigate = useNavigate()
+  const { profile } = useUserStore()
+  const { tools } = getStageResources(profile?.currentStage)
 
   function toggle(title) {
     setExpanded((prev) => (prev === title ? null : title))
@@ -72,7 +47,8 @@ export default function WellnessTools() {
       </div>
 
       <div className="space-y-3">
-        {tools.map(({ title, description, Icon, duration, color, bg, instructions }) => {
+        {tools.map(({ title, description, icon, duration, color, bg, instructions }) => {
+          const Icon = ICON_MAP[icon] ?? Wind
           const isOpen = expanded === title
           return (
             <div
