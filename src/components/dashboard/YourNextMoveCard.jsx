@@ -22,12 +22,13 @@ function isDoneThisWeek() {
 }
 
 export default function YourNextMoveCard() {
-  const { roadmapAnswers } = useUserStore()
+  const { roadmapAnswers, roadmapPlan } = useUserStore()
   const [done, setDone] = useState(() => isDoneThisWeek())
 
   const firstStep      = roadmapAnswers?.firstStep?.trim()       || ''
   const firstMoveBlocker = roadmapAnswers?.firstMoveBlocker?.trim() || ''
   const hasStage5 = Boolean(firstStep)
+  const week1 = roadmapPlan?.weeks?.[0]
 
   function markDone() {
     localStorage.setItem(LS_KEY, new Date().toISOString())
@@ -67,24 +68,44 @@ export default function YourNextMoveCard() {
             Done this week. What's next?
           </p>
         </div>
+        {roadmapPlan && (
+          <Link
+            to="/roadmap"
+            className="text-center text-xs font-medium text-brand-muted hover:text-brand-primary transition-colors duration-150"
+          >
+            View full roadmap →
+          </Link>
+        )}
       </div>
     )
   }
 
   // ── Active step ──────────────────────────────────────────────────────────
+  // If a full roadmap plan exists, show Week 1's goal as the headline action.
+  // Otherwise fall back to the raw firstStep answer.
+  const headline = week1?.goal || firstStep
+  const focusBadge = week1?.focus || null
+
   return (
     <div className="bg-white rounded-2xl p-6 shadow-sm flex flex-col gap-4">
-      <p className="text-[11px] font-semibold tracking-widest text-brand-primary uppercase">
-        Your Next Move
-      </p>
+      <div className="flex items-center justify-between">
+        <p className="text-[11px] font-semibold tracking-widest text-brand-primary uppercase">
+          Your Next Move
+        </p>
+        {focusBadge && (
+          <span className="text-[10px] font-semibold text-brand-primary bg-brand-primary/10 px-2 py-0.5 rounded-full">
+            {focusBadge}
+          </span>
+        )}
+      </div>
 
       {/* The step — Lora italic quote */}
       <p className="font-emotional italic text-brand-text text-lg leading-snug">
-        "{firstStep}"
+        "{headline}"
       </p>
 
-      {/* What's been stopping you */}
-      {firstMoveBlocker && (
+      {/* What's been stopping you — only show when no roadmap plan */}
+      {!week1 && firstMoveBlocker && (
         <div className="space-y-1">
           <p className="text-[11px] text-brand-muted uppercase tracking-wide font-semibold">
             What's been stopping you:
@@ -95,14 +116,22 @@ export default function YourNextMoveCard() {
         </div>
       )}
 
-      {/* Mark as done */}
-      <div className="mt-auto pt-2">
+      {/* Mark as done + roadmap link */}
+      <div className="mt-auto pt-2 flex flex-col gap-2">
         <button
           onClick={markDone}
           className="w-full bg-brand-primary/10 text-brand-primary text-sm font-semibold py-2.5 rounded-xl hover:bg-brand-primary/20 transition-all duration-200"
         >
           Mark as done ✓
         </button>
+        {week1 && (
+          <Link
+            to="/roadmap"
+            className="text-center text-xs font-medium text-brand-muted hover:text-brand-primary transition-colors duration-150"
+          >
+            View full roadmap →
+          </Link>
+        )}
       </div>
     </div>
   )

@@ -85,7 +85,7 @@ export default function App() {
         <Route path="/identity" element={<ProtectedRoute><IdentityPage /></ProtectedRoute>} />
         <Route path="/pointb" element={<ProtectedRoute><PointBPage /></ProtectedRoute>} />
         <Route path="/vehicle" element={<ProtectedRoute><RoadmapPage /></ProtectedRoute>} />
-        <Route path="/roadmap" element={<ProtectedRoute><RoadmapPage /></ProtectedRoute>} />
+        <Route path="/roadmap" element={<ProtectedRoute><ActionPlanPage /></ProtectedRoute>} />
         <Route path="/location" element={<ProtectedRoute><WorldPage /></ProtectedRoute>} />
         <Route path="/world" element={<ProtectedRoute><WorldPage /></ProtectedRoute>} />
         <Route path="/checkin" element={<ProtectedRoute><CheckInPage /></ProtectedRoute>} />
