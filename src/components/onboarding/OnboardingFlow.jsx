@@ -135,7 +135,7 @@ export default function OnboardingFlow() {
   }
 
   return (
-    <div className="min-h-screen bg-brand-bg flex flex-col">
+    <div className="relative min-h-screen bg-transparent flex flex-col">
 
       {/* ── Top bar: logo + progress ── */}
       <header className="shrink-0 px-6 pt-6 pb-4">
