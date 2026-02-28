@@ -5,8 +5,8 @@ import CurrencyAmountCard from './CurrencyAmountCard'
 import RoadmapReflectionCard from './RoadmapReflectionCard'
 import QuestionCard from '@/components/onboarding/QuestionCard'
 import { useUserStore } from '@/store/userStore'
-import { generateRoadmapReflection } from '@/lib/claude'
-import { syncStageAnswers, syncProfile } from '@/lib/db'
+import { generateRoadmapReflection, generateActionPlan } from '@/lib/claude'
+import { syncStageAnswers, syncProfile, syncActionPlan } from '@/lib/db'
 
 // Step 0         : section break — Career Vehicle
 // Steps 1–4      : career questions
@@ -137,9 +137,11 @@ export default function RoadmapFlow() {
   const [reflection, setReflection] = useState(null)
   const [reflectionLoading, setReflectionLoading] = useState(false)
   const [reflectionError, setReflectionError] = useState(null)
+  const [planLoading, setPlanLoading] = useState(false)
+  const [planError, setPlanError] = useState(null)
 
   const navigate = useNavigate()
-  const { user, profile, setProfile, setRoadmapAnswers, journeyProgress, setJourneyProgress } = useUserStore()
+  const { user, profile, setProfile, setRoadmapAnswers, setRoadmapPlan, journeyProgress, setJourneyProgress } = useUserStore()
 
   // Ref always holds the latest answers — avoids stale closures in async callbacks
   const latestAnswers = useRef(answers)
@@ -206,6 +208,21 @@ export default function RoadmapFlow() {
     navigate('/')
   }
 
+  async function handleBuildPlan() {
+    setPlanLoading(true)
+    setPlanError(null)
+    try {
+      const plan = await generateActionPlan(latestAnswers.current)
+      setRoadmapPlan(plan)
+      if (user?.id) syncActionPlan(user.id, plan)
+      navigate('/action-plan')
+    } catch {
+      setPlanError('Could not generate your plan. Please try again.')
+    } finally {
+      setPlanLoading(false)
+    }
+  }
+
   return (
     <div className="relative z-10 min-h-screen bg-transparent flex flex-col">
 
@@ -260,6 +277,9 @@ export default function RoadmapFlow() {
                 error={reflectionError}
                 onRetry={fetchReflection}
                 onContinue={handleContinue}
+                onBuildPlan={handleBuildPlan}
+                planLoading={planLoading}
+                planError={planError}
                 firstStep={latestAnswers.current.firstStep}
                 firstMoveBlocker={latestAnswers.current.firstMoveBlocker}
               />

@@ -278,3 +278,88 @@ Suggest 3 specific cities or regions now.`
   if (userId) insertReflection(userId, 6, text)
   return text
 }
+
+// ─── Action Plan ──────────────────────────────────────────────────────────────
+
+export async function generateActionPlan(answers) {
+  const store = useUserStore.getState()
+  const { identityAnswers, pointBAnswers } = store
+
+  const systemPrompt = `You are Unmap's strategic planning engine. Generate a personalised, achievable 4-week action plan for someone who has just completed their Stage 5 roadmap. Every task and checkpoint must reference their actual situation — no generic advice.
+
+OUTPUT: Respond with ONLY a valid JSON object. No prose before or after. No markdown code fences. Raw JSON only.
+
+JSON STRUCTURE (follow exactly):
+{
+  "theme": "A 5-10 word phrase capturing the essence of this person's transition",
+  "weeks": [
+    {
+      "week": 1,
+      "focus": "One short phrase for this week's focus area",
+      "goal": "One specific, achievable goal for this week",
+      "tasks": ["task 1", "task 2", "task 3"],
+      "checkpoint": "A single question they ask themselves at week's end to know if they made progress"
+    },
+    { "week": 2, "focus": "...", "goal": "...", "tasks": ["...", "...", "..."], "checkpoint": "..." },
+    { "week": 3, "focus": "...", "goal": "...", "tasks": ["...", "...", "..."], "checkpoint": "..." },
+    { "week": 4, "focus": "...", "goal": "...", "tasks": ["...", "...", "..."], "checkpoint": "..." }
+  ],
+  "dailyHabit": "One concrete daily practice (5-15 minutes) that will compound over the month",
+  "firstDayTask": "The single most important thing they do tomorrow. Specific and achievable in under 2 hours."
+}`
+
+  const pointBContext = pointBAnswers
+    ? `Year 1 vision: "${pointBAnswers.year1_living || pointBAnswers.year1_tuesday || 'not answered'}"
+Uncensored dream: "${pointBAnswers.uncensored_build || 'not answered'}"`
+    : 'Point B not yet completed'
+
+  const identityContext = identityAnswers
+    ? `What makes them feel alive: "${identityAnswers.feelsAlive || 'not answered'}"
+Their natural talent: "${identityAnswers.naturalTalent || 'not answered'}"
+What they're known for: "${identityAnswers.peopleAskFor || 'not answered'}"`
+    : 'Identity stage not yet completed'
+
+  const userMessage = `Build my 4-week action plan based on everything I've shared:
+
+WHAT I DO NOW:
+"${answers.currentWork || 'not answered'}"
+
+WHAT I WANT WORK TO LOOK LIKE:
+"${answers.designedWork || 'not answered'}"
+
+SKILLS I COULD EARN FROM REMOTELY:
+"${answers.remoteSkills || 'not answered'}"
+
+THE GAP:
+"${answers.workGap || 'not answered'}"
+
+MONTHLY EXPENSES: ${answers.monthlyExpenses || '0'} ${answers.currency || 'EUR'}
+SAVINGS RUNWAY: ${answers.savingsRunway || 'not answered'}
+FREEDOM INCOME TARGET: ${answers.freedomIncome || '0'} ${answers.currency || 'EUR'}
+
+MY FIRST STEP THIS WEEK:
+"${answers.firstStep || 'not answered'}"
+
+WHAT'S BEEN STOPPING ME:
+"${answers.firstMoveBlocker || 'not answered'}"
+
+MY POINT B:
+${pointBContext}
+
+MY IDENTITY:
+${identityContext}
+
+Generate a 4-week plan now. Output only the JSON.`
+
+  const response = await client.messages.create({
+    model: 'claude-sonnet-4-20250514',
+    max_tokens: 2048,
+    system: systemPrompt,
+    messages: [{ role: 'user', content: userMessage }],
+  })
+
+  const raw = response.content[0].text.trim()
+  // Strip markdown fences if Claude wraps the JSON
+  const jsonString = raw.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '').trim()
+  return JSON.parse(jsonString)
+}

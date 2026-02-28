@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import { Map, RefreshCw, AlertCircle } from 'lucide-react'
+import { Map, RefreshCw, AlertCircle, Loader2 } from 'lucide-react'
 import { parseReflection } from '@/lib/parseReflection'
 import FrameworkPills from '@/components/FrameworkPills'
 
@@ -51,6 +51,9 @@ export default function RoadmapReflectionCard({
   error,
   onRetry,
   onContinue,
+  onBuildPlan,
+  planLoading,
+  planError,
   firstStep,
   firstMoveBlocker,
 }) {
@@ -135,6 +138,28 @@ export default function RoadmapReflectionCard({
             ))}
           </div>
         </div>
+      )}
+
+      {/* Build plan CTA */}
+      {reflection && !loading && (
+        <button
+          onClick={onBuildPlan}
+          disabled={planLoading}
+          className="w-full flex items-center justify-center gap-2 bg-brand-primary/10 text-brand-primary border border-brand-primary/20 py-3.5 rounded-xl font-heading font-semibold text-base hover:bg-brand-primary/20 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {planLoading ? (
+            <>
+              <Loader2 size={16} className="animate-spin" />
+              Building your plan…
+            </>
+          ) : (
+            'Build my 4-week action plan →'
+          )}
+        </button>
+      )}
+
+      {planError && (
+        <p className="text-xs text-red-500 text-center -mt-1">{planError}</p>
       )}
 
       {/* CTA */}

@@ -162,6 +162,7 @@ export async function loadUserData(userId) {
       pointBAnswers: stageMap[4] ?? null,
       roadmapAnswers: stageMap[5] ?? null,
       worldAnswers: stageMap[6] ?? null,
+      roadmapPlan: profile?.roadmap_plan ?? null,
       checkins: checkins.map((c) => ({
         day: new Date(c.created_at).toLocaleDateString('en-US', { weekday: 'short' }),
         score: c.mood_score,
@@ -171,6 +172,21 @@ export async function loadUserData(userId) {
   } catch (err) {
     console.error('[db] loadUserData exception:', err)
     return {}
+  }
+}
+
+// ─── Action Plan ─────────────────────────────────────────────────────────────
+// SQL migration (run once in Supabase SQL editor):
+// ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS roadmap_plan JSONB;
+
+export async function syncActionPlan(userId, plan) {
+  try {
+    const { error } = await supabase
+      .from('profiles')
+      .upsert({ id: userId, roadmap_plan: plan }, { onConflict: 'id' })
+    if (error) console.error('[db] syncActionPlan error:', error)
+  } catch (err) {
+    console.error('[db] syncActionPlan exception:', err)
   }
 }
 
