@@ -38,7 +38,7 @@ export default function CheckInPage() {
       await syncCheckin(user.id, score, note.trim())
     }
     const dayLabel = new Date().toLocaleDateString('en-US', { weekday: 'short' })
-    addCheckin({ day: dayLabel, score })
+    addCheckin({ day: dayLabel, score, date: new Date().toISOString().slice(0, 10) })
     setSaving(false)
     setSaved(true)
     setTimeout(() => navigate(-1), 1200)

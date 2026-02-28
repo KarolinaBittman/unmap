@@ -24,27 +24,39 @@ const WAYPOINTS = [
 // journeyProgress % at which each stage waypoint is considered "reached"
 const STAGE_THRESHOLDS = [17, 33, 50, 67, 83, 100]
 
+// ── Margin clip bounds (in 1440×900 viewBox coordinates) ─────────────────────
+// The centre content column (sidebar 256 + content ~512 centred) occupies
+// roughly x: 500–1080 in SVG space. The path tracks are clipped to ONLY the
+// left and right margins so they never visually cross the card column.
+// Decorative elements (mountains, sparkles) and waypoints stay unclipped — they
+// are either already in the margins, or are small enough to sit cleanly behind
+// white content cards once those cards have z-index: 10.
+const MARGIN_LEFT_W  = 500   // left  margin: x 0   → 500
+const MARGIN_RIGHT_X = 1080  // right margin: x 1080 → 1440
+
 // ── 4-pointed sparkle — renders inside an <svg> context ──────────────────────
 function Sparkle({ cx, cy, r, color, opacity }) {
   const d = r
   const s = d * 0.45
   return (
     <g opacity={opacity}>
-      <line x1={cx} y1={cy - d} x2={cx} y2={cy + d}           stroke={color} strokeWidth="1.8" strokeLinecap="round" />
-      <line x1={cx - d} y1={cy} x2={cx + d} y2={cy}           stroke={color} strokeWidth="1.8" strokeLinecap="round" />
-      <line x1={cx - s} y1={cy - s} x2={cx + s} y2={cy + s}   stroke={color} strokeWidth="1.2" strokeLinecap="round" />
-      <line x1={cx + s} y1={cy - s} x2={cx - s} y2={cy + s}   stroke={color} strokeWidth="1.2" strokeLinecap="round" />
+      <line x1={cx} y1={cy - d} x2={cx} y2={cy + d}         stroke={color} strokeWidth="1.8" strokeLinecap="round" />
+      <line x1={cx - d} y1={cy} x2={cx + d} y2={cy}         stroke={color} strokeWidth="1.8" strokeLinecap="round" />
+      <line x1={cx - s} y1={cy - s} x2={cx + s} y2={cy + s} stroke={color} strokeWidth="1.2" strokeLinecap="round" />
+      <line x1={cx + s} y1={cy - s} x2={cx - s} y2={cy + s} stroke={color} strokeWidth="1.2" strokeLinecap="round" />
     </g>
   )
 }
 
 // ── Main component ────────────────────────────────────────────────────────────
-// Renders a fixed full-viewport SVG illustration on desktop, and soft orb
-// blobs on mobile. Position it as the FIRST child of a `relative` container.
+// Renders an absolutely-positioned SVG illustration on desktop, soft orb blobs
+// on mobile. Must be the FIRST child of a `position: relative` container.
+// Content above should have `relative z-10` so it stacks above this element
+// (which sits at z-index: 0 as a positioned absolute element).
 //
 // Props:
-//   progress  – override the journeyProgress from the store (optional).
-//               Pass 0 on auth/pre-journey pages.
+//   progress – override the journeyProgress from the store (optional).
+//              Pass 0 on auth/pre-journey pages.
 export default function PathBackground({ progress: progressProp }) {
   const { journeyProgress } = useUserStore()
   const pct = progressProp !== undefined ? progressProp : journeyProgress
@@ -70,9 +82,21 @@ export default function PathBackground({ progress: progressProp }) {
             <stop offset="45%"  stopColor="#D4BBFF" />
             <stop offset="100%" stopColor="#A7F3D0" />
           </linearGradient>
+
+          {/*
+            Clip path: allows the winding path tracks to be visible ONLY in
+            the left and right margin zones. The centre card column (x 500–1080)
+            is excluded so the path never cuts through content.
+            Decorative elements and waypoint dots live outside this clip group
+            and are covered naturally by white content cards (z-10).
+          */}
+          <clipPath id="marginsClip">
+            <rect x="0"               y="0" width={MARGIN_LEFT_W}            height="900" />
+            <rect x={MARGIN_RIGHT_X}  y="0" width={1440 - MARGIN_RIGHT_X}    height="900" />
+          </clipPath>
         </defs>
 
-        {/* ── Mountain ranges ─────────────────────────────────────────── */}
+        {/* ── Mountain ranges — always visible, positioned in margins ────── */}
         {/* Bottom-left cluster — behind path origin */}
         <polygon points="20,880 210,670 400,880"  fill="#EDE9FE" opacity="0.48" />
         <polygon points="70,880 230,715 390,880"  fill="#E9E3FF" opacity="0.38" />
@@ -87,67 +111,77 @@ export default function PathBackground({ progress: progressProp }) {
         <polygon points="1308,490 1393,382 1440,490" fill="#FDE68A" opacity="0.28" />
         <polygon points="1342,490 1403,402 1440,490" fill="#FEF9C3" opacity="0.22" />
 
-        {/* ── Sprouts / plants ────────────────────────────────────────── */}
-        {/* Near path origin, lower-left */}
+        {/* ── Sprouts / plants — lower margins ────────────────────────────── */}
         <line x1="338" y1="792" x2="338" y2="758" stroke="#6EE7B7" strokeWidth="2.5" strokeLinecap="round" opacity="0.52" />
         <ellipse cx="326" cy="756" rx="13" ry="7"  fill="#A7F3D0" opacity="0.48" />
         <ellipse cx="350" cy="760" rx="11" ry="6"  fill="#6EE7B7" opacity="0.38" />
 
-        <line x1="390" y1="818" x2="390" y2="786" stroke="#9FC4B7" strokeWidth="2"   strokeLinecap="round" opacity="0.46" />
+        <line x1="390" y1="818" x2="390" y2="786" stroke="#9FC4B7" strokeWidth="2" strokeLinecap="round" opacity="0.46" />
         <ellipse cx="380" cy="784" rx="11" ry="6"  fill="#A7F3D0" opacity="0.42" />
 
-        {/* Lower-right accent sprout */}
-        <line x1="1368" y1="725" x2="1368" y2="696" stroke="#6EE7B7" strokeWidth="2"   strokeLinecap="round" opacity="0.38" />
+        <line x1="1368" y1="725" x2="1368" y2="696" stroke="#6EE7B7" strokeWidth="2" strokeLinecap="round" opacity="0.38" />
         <ellipse cx="1358" cy="694" rx="10" ry="6"  fill="#A7F3D0" opacity="0.35" />
         <ellipse cx="1378" cy="698" rx="9"  ry="5"  fill="#6EE7B7" opacity="0.30" />
 
-        {/* ── Sparkles ────────────────────────────────────────────────── */}
+        {/* ── Sparkles — scattered in margin zones ────────────────────────── */}
         <Sparkle cx={158}  cy={568} r={9}  color="#D4BBFF" opacity={0.52} />
         <Sparkle cx={428}  cy={492} r={7}  color="#FFBDAD" opacity={0.48} />
         <Sparkle cx={1092} cy={348} r={8}  color="#A7F3D0" opacity={0.50} />
         <Sparkle cx={1322} cy={252} r={10} color="#BAE6FD" opacity={0.52} />
         <Sparkle cx={1392} cy={432} r={6}  color="#D4BBFF" opacity={0.40} />
         <Sparkle cx={198}  cy={742} r={6}  color="#FFBDAD" opacity={0.46} />
-        <Sparkle cx={998}  cy={562} r={7}  color="#FDE68A" opacity={0.42} />
         <Sparkle cx={638}  cy={782} r={5}  color="#EDE9FE" opacity={0.38} />
 
-        {/* ── Floating accent circles ──────────────────────────────────── */}
-        <circle cx="492"  cy="758" r="6"  fill="#E9E3FF" opacity="0.46" />
-        <circle cx="1202" cy="502" r="5"  fill="#BAE6FD" opacity="0.46" />
+        {/* ── Floating accent circles ──────────────────────────────────────── */}
         <circle cx="248"  cy="638" r="7"  fill="#FFBDAD" opacity="0.40" />
+        <circle cx="1202" cy="502" r="5"  fill="#BAE6FD" opacity="0.46" />
         <circle cx="1082" cy="138" r="6"  fill="#A7F3D0" opacity="0.46" />
-        <circle cx="758"  cy="842" r="5"  fill="#D4BBFF" opacity="0.36" />
         <circle cx="1418" cy="558" r="7"  fill="#FDE68A" opacity="0.36" />
         <circle cx="98"   cy="458" r="4"  fill="#EDE9FE" opacity="0.38" />
-        <circle cx="1182" cy="682" r="4"  fill="#A7F3D0" opacity="0.32" />
+        <circle cx="492"  cy="758" r="5"  fill="#E9E3FF" opacity="0.40" />
 
-        {/* ── Grey track (underlay) ────────────────────────────────────── */}
-        <path
-          d={PATH}
-          fill="none"
-          stroke="#DDD8EE"
-          strokeWidth="14"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          opacity="0.65"
-        />
+        {/*
+          ── Path tracks — CLIPPED TO MARGINS ONLY ────────────────────────────
+          The grey underlay and gradient progress fill are wrapped in the
+          marginsClip group. This means the winding line is only visible in the
+          left margin (x < 500) and right margin (x > 1080). In the centre card
+          column the path exists but is invisible — giving the impression the
+          path travels "behind" the content and re-emerges on the other side.
+        */}
+        <g clipPath="url(#marginsClip)">
+          {/* Grey track (full unlit path) */}
+          <path
+            d={PATH}
+            fill="none"
+            stroke="#DDD8EE"
+            strokeWidth="14"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            opacity="0.65"
+          />
 
-        {/* ── Progress fill (animated via stroke-dashoffset) ───────────── */}
-        <path
-          d={PATH}
-          fill="none"
-          stroke="url(#pathGradBg)"
-          strokeWidth="14"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          pathLength="1000"
-          strokeDasharray="1000"
-          strokeDashoffset={dashOffset}
-          opacity="0.78"
-          style={{ transition: 'stroke-dashoffset 1.4s ease-out' }}
-        />
+          {/* Gradient progress fill */}
+          <path
+            d={PATH}
+            fill="none"
+            stroke="url(#pathGradBg)"
+            strokeWidth="14"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            pathLength="1000"
+            strokeDasharray="1000"
+            strokeDashoffset={dashOffset}
+            opacity="0.78"
+            style={{ transition: 'stroke-dashoffset 1.4s ease-out' }}
+          />
+        </g>
 
-        {/* ── Stage waypoint dots (one per stage, along path) ─────────── */}
+        {/*
+          ── Stage waypoint dots — NOT clipped ────────────────────────────────
+          Dots live outside the clip group so they are always rendered. The ones
+          in the centre column are covered by white content cards (z-10), so
+          they are naturally hidden. Margin dots (stages 1, 2, 5, 6) are visible.
+        */}
         {WAYPOINTS.map(([cx, cy], i) => {
           const reached = pct >= STAGE_THRESHOLDS[i]
           return (
@@ -166,7 +200,7 @@ export default function PathBackground({ progress: progressProp }) {
         })}
       </svg>
 
-      {/* ── Mobile: soft pastel orb blobs (no path on small screens) ─── */}
+      {/* ── Mobile: soft pastel orb blobs (no SVG path on small screens) ── */}
       <div
         className="absolute inset-0 md:hidden pointer-events-none select-none overflow-hidden"
         style={{ zIndex: 0 }}

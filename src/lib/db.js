@@ -165,6 +165,7 @@ export async function loadUserData(userId) {
       checkins: checkins.map((c) => ({
         day: new Date(c.created_at).toLocaleDateString('en-US', { weekday: 'short' }),
         score: c.mood_score,
+        date: c.created_at.slice(0, 10), // YYYY-MM-DD UTC for today detection
       })),
     }
   } catch (err) {

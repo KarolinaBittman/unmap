@@ -301,7 +301,7 @@ export default function PointBFlow() {
   }
 
   return (
-    <div className="relative min-h-screen bg-transparent flex flex-col">
+    <div className="relative z-10 min-h-screen bg-transparent flex flex-col">
 
       {/* ── Top bar: logo + progress + section pills ── */}
       <header className="shrink-0 px-6 pt-6 pb-4">
