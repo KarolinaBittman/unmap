@@ -278,7 +278,7 @@ export default function PointBFlow() {
 
   function goBack() {
     if (step === 0) {
-      navigate('/')
+      navigate('/dashboard')
     } else {
       animateAndRun(() => setStep((s) => s - 1))
     }
@@ -297,7 +297,7 @@ export default function PointBFlow() {
     console.log('[PointB] handleContinue — pointBClarity being synced:', pointBClarity)
     // Include pointBClarity so it persists to profiles.point_b_clarity in Supabase
     if (user?.id) syncProfile(user.id, { ...updatedProfile, journeyProgress: nextProgress, pointBClarity })
-    navigate('/')
+    navigate('/dashboard')
   }
 
   return (

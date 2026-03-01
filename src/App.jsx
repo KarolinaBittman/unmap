@@ -37,8 +37,16 @@ function ProtectedRoute({ children, skipOnboardingCheck = false }) {
 function AuthRoute({ children }) {
   const { user, authChecked } = useUserStore()
   if (!authChecked) return null
-  if (user) return <Navigate to="/" replace />
+  if (user) return <Navigate to="/dashboard" replace />
   return children
+}
+
+// Root route: Landing for non-auth users, redirect to /dashboard for auth users.
+function RootRoute() {
+  const { user, authChecked } = useUserStore()
+  if (!authChecked) return null
+  if (user) return <Navigate to="/dashboard" replace />
+  return <Landing />
 }
 
 export default function App() {
@@ -74,10 +82,11 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route path="/" element={<RootRoute />} />
         <Route path="/welcome" element={<Landing />} />
         <Route path="/auth" element={<AuthRoute><AuthPage /></AuthRoute>} />
         <Route path="/onboarding" element={<ProtectedRoute skipOnboardingCheck><Onboarding /></ProtectedRoute>} />
-        <Route path="/" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+        <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
         {/* Stage routes — canonical names + legacy aliases */}
         <Route path="/wheel" element={<ProtectedRoute><JourneyPage /></ProtectedRoute>} />
         <Route path="/journey" element={<ProtectedRoute><JourneyPage /></ProtectedRoute>} />

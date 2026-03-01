@@ -13,7 +13,7 @@ export default function ActionPlanView({ plan }) {
     setProfile(updatedProfile)
     setJourneyProgress(nextProgress)
     if (user?.id) syncProfile(user.id, { ...updatedProfile, journeyProgress: nextProgress })
-    navigate('/')
+    navigate('/dashboard')
   }
 
   return (

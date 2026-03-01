@@ -181,7 +181,7 @@ export default function WheelOfLifeSetup() {
         )}
 
         <button
-          onClick={() => navigate('/')}
+          onClick={() => navigate('/dashboard')}
           className="w-full flex items-center justify-center gap-2 bg-brand-primary text-white py-4 rounded-xl font-heading font-semibold text-base hover:bg-brand-primary/90 transition-all duration-200 shadow-sm hover:shadow-md"
         >
           {stageData ? `Continue to Stage ${nextStage}` : 'Back to Dashboard'}
@@ -196,7 +196,7 @@ export default function WheelOfLifeSetup() {
 
       {/* ── Back button ── */}
       <button
-        onClick={() => navigate('/')}
+        onClick={() => navigate('/dashboard')}
         className="flex items-center gap-1.5 text-sm font-medium text-brand-muted hover:text-brand-text transition-colors duration-150 -ml-1"
       >
         <ArrowLeft size={15} />
@@ -276,7 +276,7 @@ export default function WheelOfLifeSetup() {
             </button>
 
             <button
-              onClick={() => navigate('/')}
+              onClick={() => navigate('/dashboard')}
               className="w-full text-xs text-brand-muted hover:text-brand-text transition-colors py-2"
             >
               Skip for now

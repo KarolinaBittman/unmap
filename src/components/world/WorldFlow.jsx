@@ -180,7 +180,7 @@ export default function WorldFlow() {
 
   function goBack() {
     if (step === 0) {
-      navigate('/')
+      navigate('/dashboard')
     } else {
       animateAndRun(() => setStep((s) => s - 1))
     }
@@ -197,7 +197,7 @@ export default function WorldFlow() {
     setProfile(updatedProfile)
     setJourneyProgress(nextProgress)
     if (user?.id) syncProfile(user.id, { ...updatedProfile, journeyProgress: nextProgress })
-    navigate('/')
+    navigate('/dashboard')
   }
 
   return (

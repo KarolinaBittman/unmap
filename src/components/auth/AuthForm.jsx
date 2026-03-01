@@ -30,7 +30,7 @@ export default function AuthForm() {
         const { error: signInError } = await supabase.auth.signInWithPassword({ email, password })
         if (signInError) throw signInError
       }
-      navigate('/')
+      navigate('/dashboard')
     } catch (err) {
       setError(err.message ?? 'Something went wrong. Please try again.')
     } finally {
