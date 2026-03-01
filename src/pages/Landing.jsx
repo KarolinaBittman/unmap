@@ -1,15 +1,15 @@
-import { useEffect, useRef } from 'react'
+import { useRef } from 'react'
 import { useNavigate, Navigate } from 'react-router-dom'
 import { useUserStore } from '@/store/userStore'
 import PathBackground from '@/components/PathBackground'
 
 const STAGES = [
-  { num: 1, name: 'Where Are You',         desc: 'Map your life across 8 areas with the Wheel of Life.',       color: 'from-purple-100 to-purple-50',   dot: 'bg-brand-primary' },
-  { num: 2, name: 'What Happened to You',  desc: 'Name the patterns and blocks that have kept you stuck.',     color: 'from-pink-100 to-pink-50',       dot: 'bg-brand-secondary' },
-  { num: 3, name: 'Who Are You',           desc: 'Discover the identity underneath the roles you play.',       color: 'from-blue-100 to-blue-50',       dot: 'bg-blue-400' },
-  { num: 4, name: 'Where Do You Want To Be', desc: 'Map your uncensored 1-year and 3-year vision.',           color: 'from-teal-100 to-teal-50',       dot: 'bg-teal-400' },
-  { num: 5, name: 'How Do You Get There',  desc: 'Build your career vehicle and financial runway.',            color: 'from-emerald-100 to-emerald-50', dot: 'bg-emerald-400' },
-  { num: 6, name: 'Where In The World',    desc: 'Find the places that match your values and freedom goals.',  color: 'from-cyan-100 to-cyan-50',       dot: 'bg-cyan-400' },
+  { num: 1, name: 'Where Are You',           desc: 'Map your life across 8 areas with the Wheel of Life.',       color: 'from-purple-100 to-purple-50',   dot: 'bg-brand-primary' },
+  { num: 2, name: 'What Happened to You',    desc: 'Name the patterns and blocks that have kept you stuck.',     color: 'from-pink-100 to-pink-50',       dot: 'bg-brand-secondary' },
+  { num: 3, name: 'Who Are You',             desc: 'Discover the identity underneath the roles you play.',       color: 'from-blue-100 to-blue-50',       dot: 'bg-blue-400' },
+  { num: 4, name: 'Where Do You Want To Be', desc: 'Map your uncensored 1-year and 3-year vision.',              color: 'from-teal-100 to-teal-50',       dot: 'bg-teal-400' },
+  { num: 5, name: 'How Do You Get There',    desc: 'Build your career vehicle and financial runway.',            color: 'from-emerald-100 to-emerald-50', dot: 'bg-emerald-400' },
+  { num: 6, name: 'Where In The World',      desc: 'Find the places that match your values and freedom goals.',  color: 'from-cyan-100 to-cyan-50',       dot: 'bg-cyan-400' },
 ]
 
 const PILLARS = [
@@ -21,7 +21,7 @@ const PILLARS = [
   {
     icon: '◈',
     title: 'Discover who you are',
-    desc: 'Unpack the values, strengths, and stories that make you you — beyond the roles you\'ve been playing.',
+    desc: "Unpack the values, strengths, and stories that make you you — beyond the roles you've been playing.",
   },
   {
     icon: '◉',
@@ -40,7 +40,7 @@ export default function Landing() {
   const { user, authChecked } = useUserStore()
   const howItWorksRef = useRef(null)
 
-  // Redirect authenticated users to dashboard
+  // Redirect authenticated users straight to the app
   if (authChecked && user) {
     return <Navigate to="/dashboard" replace />
   }
@@ -52,15 +52,37 @@ export default function Landing() {
   return (
     <div className="min-h-screen bg-brand-bg text-brand-text overflow-x-hidden">
 
-      {/* ── HERO ───────────────────────────────────────────────── */}
-      <section className="relative min-h-screen flex flex-col items-center justify-center px-6 text-center">
-        <PathBackground />
-        <div className="relative z-10 max-w-2xl mx-auto space-y-6">
-          {/* Logo */}
-          <p className="text-brand-muted text-sm font-medium tracking-widest uppercase">unmap</p>
+      {/* PathBackground — fixed z-0, renders across full viewport behind all content */}
+      <PathBackground />
 
-          {/* Headline */}
-          <h1 className="font-['Lora'] italic text-4xl md:text-6xl font-bold text-brand-text leading-tight">
+      {/* ── NAVBAR ─────────────────────────────────────────────── */}
+      <nav className="relative z-10 flex items-center justify-between px-6 py-4 md:px-12 bg-transparent">
+        <div className="flex items-center gap-2.5">
+          <img
+            src="/unmap-logo.png"
+            alt="Unmap"
+            className="h-10 w-10 rounded-full object-cover"
+          />
+          <span className="font-heading font-bold text-brand-text text-lg tracking-tight">
+            unmap
+          </span>
+        </div>
+        <button
+          onClick={() => navigate('/auth')}
+          className="text-sm font-medium text-brand-muted hover:text-brand-text transition-colors duration-150"
+        >
+          Sign in
+        </button>
+      </nav>
+
+      {/* ── HERO ───────────────────────────────────────────────── */}
+      <section className="relative z-10 min-h-[calc(100vh-72px)] flex flex-col items-center justify-center px-6 text-center">
+        <div className="max-w-2xl mx-auto space-y-6">
+          {/* Headline — Noto Serif italic */}
+          <h1
+            className="text-4xl md:text-6xl text-brand-text leading-tight"
+            style={{ fontFamily: "'Noto Serif', serif", fontStyle: 'italic', fontWeight: 400 }}
+          >
             The life you want<br />is already inside you.
           </h1>
 
@@ -85,7 +107,6 @@ export default function Landing() {
             </button>
           </div>
 
-          {/* Social proof nudge */}
           <p className="text-brand-muted text-xs pt-2">
             Free to start. No credit card required.
           </p>
@@ -98,7 +119,7 @@ export default function Landing() {
       </section>
 
       {/* ── HOW IT WORKS ───────────────────────────────────────── */}
-      <section ref={howItWorksRef} className="relative bg-white py-20 px-6">
+      <section ref={howItWorksRef} className="relative z-10 bg-white py-20 px-6">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
             <span className="text-[11px] font-semibold text-brand-primary uppercase tracking-widest">The Journey</span>
@@ -137,7 +158,7 @@ export default function Landing() {
       </section>
 
       {/* ── WHAT UNMAP DOES ────────────────────────────────────── */}
-      <section className="py-20 px-6 bg-brand-bg">
+      <section className="relative z-10 py-20 px-6 bg-brand-bg">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
             <span className="text-[11px] font-semibold text-brand-primary uppercase tracking-widest">Why Unmap</span>
@@ -165,7 +186,7 @@ export default function Landing() {
       </section>
 
       {/* ── THE FRAMEWORKS ─────────────────────────────────────── */}
-      <section className="py-20 px-6 bg-white">
+      <section className="relative z-10 py-20 px-6 bg-white">
         <div className="max-w-3xl mx-auto text-center">
           <span className="text-[11px] font-semibold text-brand-primary uppercase tracking-widest">The Science</span>
           <h2 className="font-heading font-bold text-3xl md:text-4xl text-brand-text mt-3 mb-3">
@@ -175,7 +196,6 @@ export default function Landing() {
             Every reflection is informed by decades of psychology, philosophy, and life design research.
           </p>
 
-          {/* Pill cloud */}
           <div className="flex flex-wrap justify-center gap-2.5 mb-6">
             {FRAMEWORKS.map((fw) => (
               <span
@@ -197,10 +217,12 @@ export default function Landing() {
       </section>
 
       {/* ── FINAL CTA ──────────────────────────────────────────── */}
-      <section className="relative py-28 px-6 overflow-hidden">
-        <PathBackground />
-        <div className="relative z-10 max-w-xl mx-auto text-center space-y-6">
-          <h2 className="font-['Lora'] italic text-4xl md:text-5xl font-bold text-brand-text leading-tight">
+      <section className="relative z-10 py-28 px-6">
+        <div className="max-w-xl mx-auto text-center space-y-6">
+          <h2
+            className="text-4xl md:text-5xl text-brand-text leading-tight"
+            style={{ fontFamily: "'Noto Serif', serif", fontStyle: 'italic', fontWeight: 400 }}
+          >
             You make sense.<br />All of it does.
           </h2>
           <p className="text-brand-muted text-sm max-w-xs mx-auto">
@@ -216,11 +238,18 @@ export default function Landing() {
       </section>
 
       {/* ── FOOTER ─────────────────────────────────────────────── */}
-      <footer className="bg-white border-t border-brand-border py-10 px-6">
+      <footer className="relative z-10 bg-white border-t border-brand-border py-10 px-6">
         <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div>
-            <p className="font-heading font-bold text-brand-text">unmap</p>
-            <p className="text-xs text-brand-muted mt-0.5">you make sense.</p>
+          <div className="flex items-center gap-2.5">
+            <img
+              src="/unmap-logo.png"
+              alt="Unmap"
+              className="h-8 w-8 rounded-full object-cover"
+            />
+            <div>
+              <p className="font-heading font-bold text-brand-text text-sm">unmap</p>
+              <p className="text-[10px] text-brand-muted mt-0.5">you make sense.</p>
+            </div>
           </div>
           <div className="flex items-center gap-6">
             <button

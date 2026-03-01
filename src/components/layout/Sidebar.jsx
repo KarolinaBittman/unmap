@@ -5,7 +5,7 @@ import { useUserStore } from '@/store/userStore'
 import { cn } from '@/lib/utils'
 
 const navItems = [
-  { icon: LayoutDashboard, label: 'Dashboard', path: '/' },
+  { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },
   { icon: Map, label: 'Journey', path: '/journey' },
   { icon: Heart, label: 'Check-in', path: '/checkin' },
   { icon: BookOpen, label: 'Library', path: '/resources' },
@@ -26,11 +26,18 @@ export default function Sidebar() {
   return (
     <aside className="w-64 bg-white border-r border-brand-border h-screen flex flex-col fixed left-0 top-0 z-40">
       {/* Logo */}
-      <div className="p-6 border-b border-brand-border">
-        <h1 className="font-heading font-bold text-brand-text text-xl tracking-tight">
-          unmap
-        </h1>
-        <p className="text-brand-muted text-xs mt-0.5">you make sense.</p>
+      <div className="px-5 py-4 border-b border-brand-border flex items-center gap-3">
+        <img
+          src="/unmap-logo.png"
+          alt="Unmap"
+          className="h-10 w-10 rounded-full object-cover shrink-0"
+        />
+        <div>
+          <h1 className="font-heading font-bold text-brand-text text-base tracking-tight leading-none">
+            unmap
+          </h1>
+          <p className="text-brand-muted text-[11px] mt-0.5">you make sense.</p>
+        </div>
       </div>
 
       {/* Navigation */}
@@ -39,7 +46,7 @@ export default function Sidebar() {
           <NavLink
             key={path}
             to={path}
-            end={path === '/'}
+            end={path === '/dashboard'}
             className={({ isActive }) =>
               cn(
                 'flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200',

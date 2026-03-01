@@ -3,7 +3,7 @@ import { LayoutDashboard, Map, Heart, BookOpen } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const navItems = [
-  { icon: LayoutDashboard, label: 'Dashboard', path: '/' },
+  { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },
   { icon: Map, label: 'Journey', path: '/journey' },
   { icon: Heart, label: 'Check-in', path: '/checkin' },
   { icon: BookOpen, label: 'Library', path: '/resources' },
@@ -17,7 +17,7 @@ export default function BottomNav() {
           <NavLink
             key={path}
             to={path}
-            end={path === '/'}
+            end={path === '/dashboard'}
             className={({ isActive }) =>
               cn(
                 'flex flex-col items-center gap-1 py-3 px-4 text-xs font-medium transition-all duration-200 min-w-0',
