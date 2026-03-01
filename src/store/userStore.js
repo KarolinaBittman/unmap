@@ -147,12 +147,14 @@ export const useUserStore = create(
               .catch(() => {}) // fire-and-forget, non-blocking
           }
 
-          // Only update pointBClarity when DB has a real value. If DB has null
-          // (write never landed), leave the Zustand-persisted localStorage value
-          // untouched so a failed syncProfile can't wipe a valid local value.
-          if (data.pointBClarity != null) {
-            updates.pointBClarity = Math.max(data.pointBClarity, get().pointBClarity ?? 0)
-          }
+          // Always resolve pointBClarity by taking the higher of the DB value and
+          // the locally-persisted value. If the column is missing from the DB,
+          // data.pointBClarity will be null — fall back to 0 so Math.max still
+          // preserves whatever local value exists. This covers: fresh devices,
+          // cleared localStorage, and the case where syncProfile failed silently.
+          const dbPointBClarity = data.pointBClarity ?? 0
+          const localPointBClarity = get().pointBClarity ?? 0
+          updates.pointBClarity = Math.max(dbPointBClarity, localPointBClarity)
           if (data.onboardingAnswers) updates.onboardingAnswers  = data.onboardingAnswers
           if (data.blocksAnswers)     updates.blocksAnswers      = data.blocksAnswers
           if (data.identityAnswers)   updates.identityAnswers    = data.identityAnswers

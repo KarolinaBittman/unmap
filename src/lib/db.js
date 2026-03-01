@@ -176,7 +176,8 @@ export async function loadUserData(userId) {
 }
 
 // ─── Action Plan ─────────────────────────────────────────────────────────────
-// SQL migration (run once in Supabase SQL editor):
+// SQL migrations (run once in Supabase SQL editor):
+// ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS point_b_clarity integer DEFAULT 0;
 // ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS roadmap_plan JSONB;
 
 export async function syncActionPlan(userId, plan) {
