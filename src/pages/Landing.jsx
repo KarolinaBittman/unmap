@@ -60,11 +60,11 @@ export default function Landing() {
       {/* ── NAVBAR ─────────────────────────────────────────────── */}
       <nav
         className="sticky top-0 z-50 flex items-center justify-between px-6 py-4 md:px-12"
-        style={{ background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }}
+        style={{ background: 'rgba(255,255,255,0.75)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', borderBottom: '1px solid rgba(0,0,0,0.06)' }}
       >
         <div className="flex items-center gap-2.5">
           <img
-            src="/Unmap Logo.png"
+            src="/icon.png"
             alt="Unmap"
             className="h-10 w-10 object-contain"
           />
