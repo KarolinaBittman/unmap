@@ -24,16 +24,6 @@ const WAYPOINTS = [
 // journeyProgress % at which each stage waypoint is considered "reached"
 const STAGE_THRESHOLDS = [17, 33, 50, 67, 83, 100]
 
-// ── Margin clip bounds (in 1440×900 viewBox coordinates) ─────────────────────
-// The centre content column (sidebar 256 + content ~512 centred) occupies
-// roughly x: 500–1080 in SVG space. The path tracks are clipped to ONLY the
-// left and right margins so they never visually cross the card column.
-// Decorative elements (mountains, sparkles) and waypoints stay unclipped — they
-// are either already in the margins, or are small enough to sit cleanly behind
-// white content cards once those cards have z-index: 10.
-const MARGIN_LEFT_W  = 500   // left  margin: x 0   → 500
-const MARGIN_RIGHT_X = 1080  // right margin: x 1080 → 1440
-
 // ── 4-pointed sparkle — renders inside an <svg> context ──────────────────────
 function Sparkle({ cx, cy, r, color, opacity }) {
   const d = r
@@ -49,10 +39,10 @@ function Sparkle({ cx, cy, r, color, opacity }) {
 }
 
 // ── Main component ────────────────────────────────────────────────────────────
-// Renders an absolutely-positioned SVG illustration on desktop, soft orb blobs
-// on mobile. Must be the FIRST child of a `position: relative` container.
-// Content above should have `relative z-10` so it stacks above this element
-// (which sits at z-index: 0 as a positioned absolute element).
+// Renders a viewport-fixed SVG illustration on desktop, soft orb blobs on
+// mobile. Uses `position: fixed` so it is always full-viewport and never
+// clipped by a parent container — it shows correctly on both short and long
+// pages. Content that should appear above it needs `relative z-10`.
 //
 // Props:
 //   progress – override the journeyProgress from the store (optional).
@@ -69,7 +59,7 @@ export default function PathBackground({ progress: progressProp }) {
     <>
       {/* ── Desktop: full SVG illustration ───────────────────────────────── */}
       <svg
-        className="absolute inset-0 w-full h-full hidden md:block pointer-events-none select-none"
+        className="fixed inset-0 w-full h-full hidden md:block pointer-events-none select-none"
         style={{ zIndex: 0 }}
         viewBox="0 0 1440 900"
         preserveAspectRatio="xMidYMid slice"
@@ -82,18 +72,6 @@ export default function PathBackground({ progress: progressProp }) {
             <stop offset="45%"  stopColor="#D4BBFF" />
             <stop offset="100%" stopColor="#A7F3D0" />
           </linearGradient>
-
-          {/*
-            Clip path: allows the winding path tracks to be visible ONLY in
-            the left and right margin zones. The centre card column (x 500–1080)
-            is excluded so the path never cuts through content.
-            Decorative elements and waypoint dots live outside this clip group
-            and are covered naturally by white content cards (z-10).
-          */}
-          <clipPath id="marginsClip">
-            <rect x="0"               y="0" width={MARGIN_LEFT_W}            height="900" />
-            <rect x={MARGIN_RIGHT_X}  y="0" width={1440 - MARGIN_RIGHT_X}    height="900" />
-          </clipPath>
         </defs>
 
         {/* ── Mountain ranges — always visible, positioned in margins ────── */}
@@ -141,47 +119,38 @@ export default function PathBackground({ progress: progressProp }) {
         <circle cx="492"  cy="758" r="5"  fill="#E9E3FF" opacity="0.40" />
 
         {/*
-          ── Path tracks — CLIPPED TO MARGINS ONLY ────────────────────────────
-          The grey underlay and gradient progress fill are wrapped in the
-          marginsClip group. This means the winding line is only visible in the
-          left margin (x < 500) and right margin (x > 1080). In the centre card
-          column the path exists but is invisible — giving the impression the
-          path travels "behind" the content and re-emerges on the other side.
+          ── Path tracks — full viewport ───────────────────────────────────────
+          Both tracks render across the entire screen. White-background content
+          cards (z-10) sit visually above the path wherever they overlap. The
+          path shows naturally in margins and gaps between content sections.
         */}
-        <g clipPath="url(#marginsClip)">
-          {/* Grey track (full unlit path) */}
-          <path
-            d={PATH}
-            fill="none"
-            stroke="#DDD8EE"
-            strokeWidth="14"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            opacity="0.65"
-          />
+        {/* Grey track (full unlit path) */}
+        <path
+          d={PATH}
+          fill="none"
+          stroke="#DDD8EE"
+          strokeWidth="14"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          opacity="0.65"
+        />
 
-          {/* Gradient progress fill */}
-          <path
-            d={PATH}
-            fill="none"
-            stroke="url(#pathGradBg)"
-            strokeWidth="14"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            pathLength="1000"
-            strokeDasharray="1000"
-            strokeDashoffset={dashOffset}
-            opacity="0.78"
-            style={{ transition: 'stroke-dashoffset 1.4s ease-out' }}
-          />
-        </g>
+        {/* Gradient progress fill */}
+        <path
+          d={PATH}
+          fill="none"
+          stroke="url(#pathGradBg)"
+          strokeWidth="14"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          pathLength="1000"
+          strokeDasharray="1000"
+          strokeDashoffset={dashOffset}
+          opacity="0.78"
+          style={{ transition: 'stroke-dashoffset 1.4s ease-out' }}
+        />
 
-        {/*
-          ── Stage waypoint dots — NOT clipped ────────────────────────────────
-          Dots live outside the clip group so they are always rendered. The ones
-          in the centre column are covered by white content cards (z-10), so
-          they are naturally hidden. Margin dots (stages 1, 2, 5, 6) are visible.
-        */}
+        {/* ── Stage waypoint dots ──────────────────────────────────────────── */}
         {WAYPOINTS.map(([cx, cy], i) => {
           const reached = pct >= STAGE_THRESHOLDS[i]
           return (
@@ -202,7 +171,7 @@ export default function PathBackground({ progress: progressProp }) {
 
       {/* ── Mobile: soft pastel orb blobs (no SVG path on small screens) ── */}
       <div
-        className="absolute inset-0 md:hidden pointer-events-none select-none overflow-hidden"
+        className="fixed inset-0 md:hidden pointer-events-none select-none overflow-hidden"
         style={{ zIndex: 0 }}
       >
         <div
