@@ -30,7 +30,7 @@ export default function Sidebar() {
         <img
           src="/Unmap Logo.png"
           alt="Unmap"
-          className="h-10 w-10 rounded-full object-cover shrink-0"
+          className="h-10 w-10 object-contain shrink-0"
         />
         <div>
           <h1 className="font-heading font-bold text-brand-text text-base tracking-tight leading-none">

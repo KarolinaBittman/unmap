@@ -58,12 +58,15 @@ export default function Landing() {
       <PathBackground scrollFill />
 
       {/* ── NAVBAR ─────────────────────────────────────────────── */}
-      <nav className="relative z-10 flex items-center justify-between px-6 py-4 md:px-12">
+      <nav
+        className="sticky top-0 z-50 flex items-center justify-between px-6 py-4 md:px-12"
+        style={{ background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }}
+      >
         <div className="flex items-center gap-2.5">
           <img
             src="/Unmap Logo.png"
             alt="Unmap"
-            className="h-10 w-10 rounded-full object-cover"
+            className="h-10 w-10 object-contain"
           />
           <span className="font-heading font-bold text-brand-text text-lg tracking-tight">
             unmap

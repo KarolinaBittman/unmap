@@ -28,7 +28,7 @@ export default function Navbar() {
     <>
       <header className="bg-white border-b border-brand-border px-4 py-3 flex items-center justify-between md:hidden sticky top-0 z-30">
         <div className="flex items-center gap-2">
-          <img src="/Unmap Logo.png" alt="Unmap" className="h-8 w-8 rounded-full object-cover" />
+          <img src="/Unmap Logo.png" alt="Unmap" className="h-8 w-8 object-contain" />
           <h1 className="font-heading font-bold text-brand-text text-base tracking-tight">
             unmap
           </h1>
