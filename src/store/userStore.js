@@ -138,23 +138,30 @@ export const useUserStore = create(
           const correctProgress = progressForStage(resolvedStage)
           updates.journeyProgress = correctProgress
 
-          // One-time migration: if the DB has a stale progress value, patch it now.
-          // This silently corrects all existing users without requiring a manual fix.
+          // Resolve pointBClarity BEFORE any sync calls so we always pass the real
+          // value. The migration sync below was previously omitting pointBClarity,
+          // causing it to write point_b_clarity: 0 to the DB on every page load.
+          const dbPointBClarity    = data.pointBClarity ?? 0
+          const localPointBClarity = get().pointBClarity ?? 0
+          const resolvedPointBClarity = Math.max(dbPointBClarity, localPointBClarity)
+          updates.pointBClarity = resolvedPointBClarity
+
+          // One-time migration: if the DB has a stale journey_progress value, patch it now.
+          // Always include pointBClarity in the payload so we never write 0 over a real value.
           const storedProgress = data.journeyProgress ?? 0
           if (storedProgress < correctProgress && resolvedStage >= 2) {
             const profileToSync = updates.profile ?? get().profile
-            syncProfile(userId, { ...profileToSync, journeyProgress: correctProgress })
+            syncProfile(userId, { ...profileToSync, journeyProgress: correctProgress, pointBClarity: resolvedPointBClarity })
               .catch(() => {}) // fire-and-forget, non-blocking
           }
 
-          // Always resolve pointBClarity by taking the higher of the DB value and
-          // the locally-persisted value. If the column is missing from the DB,
-          // data.pointBClarity will be null — fall back to 0 so Math.max still
-          // preserves whatever local value exists. This covers: fresh devices,
-          // cleared localStorage, and the case where syncProfile failed silently.
-          const dbPointBClarity = data.pointBClarity ?? 0
-          const localPointBClarity = get().pointBClarity ?? 0
-          updates.pointBClarity = Math.max(dbPointBClarity, localPointBClarity)
+          // Repair sync: if the DB has point_b_clarity lower than the resolved value
+          // (e.g. the migration previously wrote 0 over a real value), fix it now.
+          if (resolvedPointBClarity > dbPointBClarity) {
+            const profileToSync = updates.profile ?? get().profile
+            syncProfile(userId, { ...profileToSync, journeyProgress: correctProgress, pointBClarity: resolvedPointBClarity })
+              .catch(() => {})
+          }
           if (data.onboardingAnswers) updates.onboardingAnswers  = data.onboardingAnswers
           if (data.blocksAnswers)     updates.blocksAnswers      = data.blocksAnswers
           if (data.identityAnswers)   updates.identityAnswers    = data.identityAnswers

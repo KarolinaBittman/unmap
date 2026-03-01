@@ -1,7 +1,7 @@
 import { BookOpen, FileText, Pencil, Globe, ExternalLink } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useUserStore } from '@/store/userStore'
-import { getStageResources } from '@/lib/resources'
+import { getPersonalisedResources } from '@/lib/resources'
 
 // Map type string → icon component
 const TYPE_ICONS = {
@@ -13,8 +13,10 @@ const TYPE_ICONS = {
 
 export default function TodaysResources() {
   const navigate = useNavigate()
-  const { profile } = useUserStore()
-  const { resources } = getStageResources(profile?.currentStage)
+  const { profile, checkins } = useUserStore()
+  const today = new Date().toISOString().slice(0, 10)
+  const todayMood = checkins.find((c) => c.date === today)?.score ?? null
+  const { resources } = getPersonalisedResources(profile?.currentStage, todayMood)
 
   function handleClick(url) {
     if (url) {

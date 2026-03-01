@@ -5,7 +5,7 @@ import {
 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useUserStore } from '@/store/userStore'
-import { getStageResources } from '@/lib/resources'
+import { getPersonalisedResources } from '@/lib/resources'
 
 // Map icon name string (from resources.js) → lucide component
 const ICON_MAP = {
@@ -25,8 +25,10 @@ const ICON_MAP = {
 export default function WellnessTools() {
   const [expanded, setExpanded] = useState(null)
   const navigate = useNavigate()
-  const { profile } = useUserStore()
-  const { tools } = getStageResources(profile?.currentStage)
+  const { profile, checkins } = useUserStore()
+  const today = new Date().toISOString().slice(0, 10)
+  const todayMood = checkins.find((c) => c.date === today)?.score ?? null
+  const { tools } = getPersonalisedResources(profile?.currentStage, todayMood)
 
   function toggle(title) {
     setExpanded((prev) => (prev === title ? null : title))

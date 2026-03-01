@@ -2,7 +2,8 @@ import { useState } from 'react'
 import Sidebar from '@/components/layout/Sidebar'
 import Navbar from '@/components/layout/Navbar'
 import BottomNav from '@/components/layout/BottomNav'
-import { ChevronDown, ChevronUp } from 'lucide-react'
+import { ChevronDown, ChevronUp, ArrowRight } from 'lucide-react'
+import { getAllWellnessTools } from '@/lib/resources'
 
 // ─── Framework data ────────────────────────────────────────────────────────
 const CLUSTERS = [
@@ -233,9 +234,79 @@ function ClusterCard({ cluster }) {
   )
 }
 
+// ─── Wellness tool row ──────────────────────────────────────────────────────
+function WellnessToolRow({ tool }) {
+  const [open, setOpen] = useState(false)
+  return (
+    <div className="rounded-xl border border-brand-border overflow-hidden">
+      <button
+        onClick={() => setOpen((o) => !o)}
+        className="w-full flex items-center gap-3 p-3 bg-brand-surface hover:bg-brand-border/20 transition-colors duration-150 text-left"
+      >
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center justify-between">
+            <p className="text-sm font-medium text-brand-text">{tool.title}</p>
+            <span className="text-xs text-brand-muted ml-2 shrink-0">{tool.duration}</span>
+          </div>
+          <p className="text-xs text-brand-muted mt-0.5 leading-snug">{tool.description}</p>
+        </div>
+        {open
+          ? <ChevronUp size={14} className="text-brand-muted shrink-0" />
+          : <ArrowRight size={14} className="text-brand-muted shrink-0" />
+        }
+      </button>
+      {open && (
+        <div className="px-4 pb-4 pt-3 bg-white border-t border-brand-border">
+          <p className="text-[10px] font-semibold text-brand-muted uppercase tracking-widest mb-2">How to do it</p>
+          <ol className="space-y-1.5">
+            {tool.instructions.map((step, i) => (
+              <li key={i} className="flex gap-2 text-xs text-brand-text leading-snug">
+                <span className="text-brand-primary font-semibold shrink-0">{i + 1}.</span>
+                <span>{step}</span>
+              </li>
+            ))}
+          </ol>
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ─── Wellness category accordion ───────────────────────────────────────────
+function WellnessCategoryCard({ category, color, dot, tools }) {
+  const [open, setOpen] = useState(false)
+  return (
+    <div className={`rounded-2xl border ${color} overflow-hidden`}>
+      <button
+        onClick={() => setOpen((o) => !o)}
+        className="w-full flex items-center justify-between p-5 text-left gap-3"
+      >
+        <div className="flex items-center gap-3 min-w-0">
+          <div className={`w-3 h-3 rounded-full shrink-0 ${dot}`} />
+          <p className="font-heading font-semibold text-brand-text text-sm">{category}</p>
+        </div>
+        <div className="flex items-center gap-2 shrink-0">
+          <span className="text-xs text-brand-muted">{tools.length}</span>
+          {open ? <ChevronUp size={16} className="text-brand-muted" /> : <ChevronDown size={16} className="text-brand-muted" />}
+        </div>
+      </button>
+      {open && (
+        <div className="bg-white border-t border-brand-border/50 p-4 space-y-2">
+          {tools.map((tool) => (
+            <WellnessToolRow key={tool.title} tool={tool} />
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
 // ─── Page ──────────────────────────────────────────────────────────────────
 export default function ResourcesPage() {
+  const [tab, setTab] = useState('frameworks')
   const total = CLUSTERS.reduce((sum, c) => sum + c.frameworks.length, 0)
+  const wellnessCategories = getAllWellnessTools()
+  const totalTools = wellnessCategories.reduce((sum, c) => sum + c.tools.length, 0)
 
   return (
     <div className="flex min-h-screen bg-brand-bg">
@@ -247,20 +318,61 @@ export default function ResourcesPage() {
         <main className="flex-1 p-4 md:p-8 pb-24 md:pb-8">
           <div className="max-w-2xl">
             <h1 className="font-heading font-bold text-2xl text-brand-text mb-1">
-              Frameworks Library
+              Library
             </h1>
-            <p className="text-brand-muted text-sm mb-1">
-              The intellectual foundation behind every stage of Unmap.
-            </p>
-            <p className="text-xs text-brand-muted mb-8">
-              {total} frameworks across {CLUSTERS.length} clusters · Referenced for educational purposes · Credits go to the original creators
+            <p className="text-brand-muted text-sm mb-6">
+              The intellectual and practical foundation behind every stage of Unmap.
             </p>
 
-            <div className="space-y-3">
-              {CLUSTERS.map((cluster) => (
-                <ClusterCard key={cluster.id} cluster={cluster} />
-              ))}
+            {/* Tabs */}
+            <div className="flex gap-1 bg-brand-surface rounded-xl p-1 mb-8 w-fit">
+              <button
+                onClick={() => setTab('frameworks')}
+                className={`px-5 py-2 rounded-lg text-sm font-medium transition-all duration-150 ${
+                  tab === 'frameworks'
+                    ? 'bg-white text-brand-text shadow-sm'
+                    : 'text-brand-muted hover:text-brand-text'
+                }`}
+              >
+                Frameworks
+              </button>
+              <button
+                onClick={() => setTab('tools')}
+                className={`px-5 py-2 rounded-lg text-sm font-medium transition-all duration-150 ${
+                  tab === 'tools'
+                    ? 'bg-white text-brand-text shadow-sm'
+                    : 'text-brand-muted hover:text-brand-text'
+                }`}
+              >
+                Wellness Tools
+              </button>
             </div>
+
+            {tab === 'frameworks' && (
+              <>
+                <p className="text-xs text-brand-muted mb-6">
+                  {total} frameworks across {CLUSTERS.length} clusters · Referenced for educational purposes · Credits go to the original creators
+                </p>
+                <div className="space-y-3">
+                  {CLUSTERS.map((cluster) => (
+                    <ClusterCard key={cluster.id} cluster={cluster} />
+                  ))}
+                </div>
+              </>
+            )}
+
+            {tab === 'tools' && (
+              <>
+                <p className="text-xs text-brand-muted mb-6">
+                  {totalTools} practices across {wellnessCategories.length} categories · Expand any tool for step-by-step instructions
+                </p>
+                <div className="space-y-3">
+                  {wellnessCategories.map((cat) => (
+                    <WellnessCategoryCard key={cat.category} {...cat} />
+                  ))}
+                </div>
+              </>
+            )}
           </div>
         </main>
       </div>

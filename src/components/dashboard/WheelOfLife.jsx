@@ -1,8 +1,10 @@
+import { useNavigate } from 'react-router-dom'
 import { useUserStore } from '@/store/userStore'
 import WheelChart from './WheelChart'
 
 export default function WheelOfLife() {
   const { wheelScores } = useUserStore()
+  const navigate = useNavigate()
 
   const avg = (
     Object.values(wheelScores).reduce((a, b) => a + b, 0) /
@@ -10,7 +12,10 @@ export default function WheelOfLife() {
   ).toFixed(1)
 
   return (
-    <div className="bg-white rounded-2xl p-6 shadow-sm border border-brand-border">
+    <div
+      onClick={() => navigate('/wheel')}
+      className="bg-white rounded-2xl p-6 shadow-sm border border-brand-border cursor-pointer hover:border-brand-primary/40 hover:shadow-md transition-all duration-200"
+    >
       <div className="flex items-center justify-between mb-1">
         <h3 className="font-heading font-semibold text-brand-text">
           Wheel of Life

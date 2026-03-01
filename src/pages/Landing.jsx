@@ -150,7 +150,7 @@ export default function Landing() {
             {STAGES.map((stage) => (
               <div
                 key={stage.num}
-                className={`bg-gradient-to-br ${stage.color} rounded-2xl p-5 border border-brand-border/50 backdrop-blur-sm`}
+                className={`bg-gradient-to-br ${stage.color} rounded-2xl p-5 border border-brand-border/50 backdrop-blur-sm hover:-translate-y-1 hover:shadow-md transition-all duration-200 cursor-default`}
               >
                 <div className="flex items-center gap-2 mb-3">
                   <div className={`w-6 h-6 rounded-full ${stage.dot} flex items-center justify-center`}>
@@ -185,7 +185,7 @@ export default function Landing() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {PILLARS.map((pillar) => (
-              <div key={pillar.title} className="bg-white/90 rounded-2xl p-6 border border-brand-border shadow-sm backdrop-blur-sm">
+              <div key={pillar.title} className="bg-white/90 rounded-2xl p-6 border border-brand-border shadow-sm backdrop-blur-sm hover:-translate-y-1 hover:shadow-md transition-all duration-200">
                 <div className="w-10 h-10 rounded-xl bg-brand-surface flex items-center justify-center text-brand-primary text-xl mb-4">
                   {pillar.icon}
                 </div>
@@ -217,7 +217,7 @@ export default function Landing() {
             {FRAMEWORKS.map((fw) => (
               <span
                 key={fw}
-                className="bg-white/80 text-brand-text text-sm font-medium px-4 py-2 rounded-full border border-brand-border backdrop-blur-sm"
+                className="bg-white/80 text-brand-text text-sm font-medium px-4 py-2 rounded-full border border-brand-border backdrop-blur-sm hover:-translate-y-0.5 hover:shadow-sm transition-all duration-200"
               >
                 {fw}
               </span>

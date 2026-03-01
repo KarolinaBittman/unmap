@@ -66,10 +66,14 @@ function EmptyState() {
 
 export default function EmotionalBaseline() {
   const { checkins } = useUserStore()
+  const navigate = useNavigate()
   const hasData = checkins.length > 0
 
   return (
-    <div className="bg-white rounded-2xl p-6 shadow-sm border border-brand-border">
+    <div
+      onClick={() => navigate('/checkin')}
+      className="bg-white rounded-2xl p-6 shadow-sm border border-brand-border cursor-pointer hover:border-brand-primary/40 hover:shadow-md transition-all duration-200"
+    >
       <div className="flex items-center justify-between mb-1">
         <h3 className="font-heading font-semibold text-brand-text">
           Emotional Baseline

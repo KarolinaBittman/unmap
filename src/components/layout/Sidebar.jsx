@@ -28,7 +28,7 @@ export default function Sidebar() {
       {/* Logo */}
       <div className="px-5 py-4 border-b border-brand-border flex items-center gap-3">
         <img
-          src="/Unmap Logo.png"
+          src="/icon.png"
           alt="Unmap"
           className="h-10 w-10 object-contain shrink-0"
         />

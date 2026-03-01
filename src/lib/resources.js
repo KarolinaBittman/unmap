@@ -461,6 +461,37 @@ const TOOLS = {
   ],
 }
 
+// ─── Mood-specific overrides ──────────────────────────────────────────────────
+// Regulation tools: low mood (≤ 3) — calm the nervous system first
+const REGULATION_TOOLS = [
+  TOOLS[1][0], // Box Breathing
+  TOOLS[1][1], // Body Scan
+  TOOLS[2][1], // 5-4-3-2-1 Grounding
+]
+const REGULATION_RESOURCES = [
+  RESOURCES[2][0], // The Body Keeps the Score
+  {
+    title: 'Polyvagal Theory Explained',
+    type: 'Article',
+    framework: 'Polyvagal Theory',
+    description: 'Your nervous system is not broken — it is doing exactly what it learned to do.',
+    url: 'https://www.rhythmofregulation.com/polyvagal.php',
+  },
+  RESOURCES[2][2], // The Belief Audit
+]
+
+// Action tools: high mood (≥ 7) — channel the momentum
+const ACTION_TOOLS = [
+  TOOLS[5][0], // Pomodoro Technique
+  TOOLS[5][1], // Weekly Review
+  TOOLS[3][0], // Values Journaling
+]
+const ACTION_RESOURCES = [
+  RESOURCES[5][2], // Atomic Habits
+  RESOURCES[5][0], // The $100 Startup
+  RESOURCES[4][0], // Designing Your Life
+]
+
 // ─── Public API ───────────────────────────────────────────────────────────────
 
 export function getStageResources(stage) {
@@ -470,4 +501,55 @@ export function getStageResources(stage) {
     resources: RESOURCES[s],
     tools: TOOLS[s],
   }
+}
+
+// Personalised by two signals:
+//   currentStage — which stage of the journey the user is on
+//   todayMood    — today's check-in score (1-10), or null/undefined if no check-in today
+//
+// Mood ≤ 3 → regulation-focused (nervous system tools, somatic resources)
+// Mood ≥ 7 → action-focused (productivity tools, momentum-building resources)
+// Otherwise → stage-based defaults
+export function getPersonalisedResources(currentStage, todayMood) {
+  if (todayMood != null) {
+    if (todayMood <= 3) return { resources: REGULATION_RESOURCES, tools: REGULATION_TOOLS }
+    if (todayMood >= 7) return { resources: ACTION_RESOURCES,     tools: ACTION_TOOLS }
+  }
+  return getStageResources(currentStage)
+}
+
+// All unique wellness tools organised by category — used by the Library wellness tab.
+export function getAllWellnessTools() {
+  return [
+    {
+      category: 'Breathing & Regulation',
+      color: 'bg-teal-50 border-teal-100',
+      dot: 'bg-teal-400',
+      tools: [TOOLS[1][0], TOOLS[5][2], TOOLS[2][1]], // Box Breathing, Focus Breathing, 5-4-3-2-1 Grounding
+    },
+    {
+      category: 'Body & Somatic',
+      color: 'bg-blue-50 border-blue-100',
+      dot: 'bg-blue-400',
+      tools: [TOOLS[1][1], TOOLS[6][0]], // Body Scan, Walking Meditation
+    },
+    {
+      category: 'Journaling & Reflection',
+      color: 'bg-pink-50 border-pink-100',
+      dot: 'bg-rose-400',
+      tools: [TOOLS[1][2], TOOLS[3][0], TOOLS[3][1], TOOLS[4][0], TOOLS[4][1], TOOLS[6][2]], // Gratitude, Values J, Morning Pages, Future Self, Vision J, Travel J
+    },
+    {
+      category: 'Emotional Awareness',
+      color: 'bg-purple-50 border-purple-100',
+      dot: 'bg-purple-400',
+      tools: [TOOLS[2][2], TOOLS[3][2]], // Emotional Check-in, Mirror Work
+    },
+    {
+      category: 'Productivity & Action',
+      color: 'bg-amber-50 border-amber-100',
+      dot: 'bg-amber-400',
+      tools: [TOOLS[5][0], TOOLS[5][1]], // Pomodoro Technique, Weekly Review
+    },
+  ]
 }
