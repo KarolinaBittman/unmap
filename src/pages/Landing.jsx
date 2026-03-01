@@ -53,8 +53,9 @@ export default function Landing() {
     // Base background colour — path SVG (fixed z-0) sits on top of this, sections sit on top of path
     <div className="min-h-screen bg-brand-bg text-brand-text overflow-x-hidden">
 
-      {/* PathBackground — position:fixed, z-index:0, always covers full viewport */}
-      <PathBackground />
+      {/* PathBackground — fixed z-0, full viewport. scrollFill drives the
+          gradient stroke animation as the user scrolls down the page. */}
+      <PathBackground scrollFill />
 
       {/* ── NAVBAR ─────────────────────────────────────────────── */}
       <nav className="relative z-10 flex items-center justify-between px-6 py-4 md:px-12">

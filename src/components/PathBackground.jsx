@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { useUserStore } from '@/store/userStore'
 
 // Winding path from bottom-left to top-right across a 1440×900 canvas.
@@ -45,15 +46,39 @@ function Sparkle({ cx, cy, r, color, opacity }) {
 // pages. Content that should appear above it needs `relative z-10`.
 //
 // Props:
-//   progress – override the journeyProgress from the store (optional).
-//              Pass 0 on auth/pre-journey pages.
-export default function PathBackground({ progress: progressProp }) {
+//   progress    – override journeyProgress from the store (optional).
+//                 Pass 0 on auth/pre-journey pages.
+//   scrollFill  – when true, the gradient stroke fills as the user scrolls
+//                 down the page (used on the landing page). The filled stroke
+//                 starts at the path origin and fills toward the end as
+//                 scrollY increases from 0 to max scroll.
+export default function PathBackground({ progress: progressProp, scrollFill = false }) {
   const { journeyProgress } = useUserStore()
   const pct = progressProp !== undefined ? progressProp : journeyProgress
 
   // stroke-dashoffset trick with pathLength="1000":
   //   dashoffset = 1000 → nothing shown; 0 → full path shown
   const dashOffset = 1000 - (pct / 100) * 1000
+
+  // ── Scroll-driven fill (landing page only) ───────────────────────────────
+  const [scrollPct, setScrollPct] = useState(0)
+
+  useEffect(() => {
+    if (!scrollFill) return
+
+    function onScroll() {
+      const maxScroll = document.body.scrollHeight - window.innerHeight
+      if (maxScroll <= 0) return
+      setScrollPct(Math.min(1, window.scrollY / maxScroll))
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true })
+    onScroll() // set initial value
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [scrollFill])
+
+  // No CSS transition here — follows scroll in real-time
+  const scrollDashOffset = 1000 - scrollPct * 1000
 
   return (
     <>
@@ -66,12 +91,21 @@ export default function PathBackground({ progress: progressProp }) {
         aria-hidden="true"
       >
         <defs>
-          {/* Gradient flows from coral (start) through lavender to mint (end) */}
+          {/* Journey progress gradient: coral → lavender → mint */}
           <linearGradient id="pathGradBg" x1="5%" y1="95%" x2="95%" y2="5%">
             <stop offset="0%"   stopColor="#FFBDAD" />
             <stop offset="45%"  stopColor="#D4BBFF" />
             <stop offset="100%" stopColor="#A7F3D0" />
           </linearGradient>
+
+          {/* Scroll-fill gradient: coral → lavender → teal (landing page) */}
+          {scrollFill && (
+            <linearGradient id="scrollFillGrad" x1="5%" y1="95%" x2="95%" y2="5%">
+              <stop offset="0%"   stopColor="#FFBDAD" />
+              <stop offset="50%"  stopColor="#C4B5FD" />
+              <stop offset="100%" stopColor="#2DD4BF" />
+            </linearGradient>
+          )}
         </defs>
 
         {/* ── Mountain ranges — always visible, positioned in margins ────── */}
@@ -135,7 +169,7 @@ export default function PathBackground({ progress: progressProp }) {
           opacity="0.65"
         />
 
-        {/* Gradient progress fill */}
+        {/* Journey progress fill — driven by journeyProgress store value */}
         <path
           d={PATH}
           fill="none"
@@ -149,6 +183,24 @@ export default function PathBackground({ progress: progressProp }) {
           opacity="0.78"
           style={{ transition: 'stroke-dashoffset 1.4s ease-out' }}
         />
+
+        {/* Scroll-fill overlay — only rendered on landing page (scrollFill=true).
+            Fills from path start toward end as user scrolls down. No transition
+            so it tracks scroll position in real time. */}
+        {scrollFill && (
+          <path
+            d={PATH}
+            fill="none"
+            stroke="url(#scrollFillGrad)"
+            strokeWidth="14"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            pathLength="1000"
+            strokeDasharray="1000"
+            strokeDashoffset={scrollDashOffset}
+            opacity="0.85"
+          />
+        )}
 
         {/* ── Stage waypoint dots ──────────────────────────────────────────── */}
         {WAYPOINTS.map(([cx, cy], i) => {
