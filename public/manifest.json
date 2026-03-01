@@ -1,0 +1,22 @@
+{
+  "name": "Unmap",
+  "short_name": "Unmap",
+  "description": "Design the life you actually want",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F0EEFF",
+  "theme_color": "#2DD4BF",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/Unmap Logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/Unmap Logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

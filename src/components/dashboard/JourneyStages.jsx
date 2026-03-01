@@ -34,8 +34,8 @@ export default function JourneyStages() {
         </span>
       </div>
 
-      {/* 2 rows of 3 below 1280px, single row of 6 at xl+ */}
-      <div className="grid grid-cols-3 gap-3 xl:grid-cols-6">
+      {/* 2 cols on mobile → 3 on sm → 6 on xl */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 xl:grid-cols-6">
         {STAGES.map((stage) => {
           const status = getStatus(stage.id)
           return (

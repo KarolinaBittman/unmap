@@ -28,7 +28,7 @@ export default function StageCard({ stage, status, onClick }) {
       onKeyDown={isClickable ? (e) => e.key === 'Enter' && onClick() : undefined}
       style={!isLocked ? { backgroundColor: stageBg } : undefined}
       className={cn(
-        'rounded-2xl p-5 flex flex-col gap-3 transition-all duration-200',
+        'rounded-2xl p-3.5 sm:p-5 flex flex-col gap-2 sm:gap-3 transition-all duration-200',
         isCompleted && 'border border-brand-border/60',
         isCurrent && 'border-2 border-brand-primary shadow-sm',
         isLocked && 'bg-white border border-brand-border opacity-55',

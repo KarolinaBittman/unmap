@@ -6,7 +6,7 @@ import { useUserStore } from '@/store/userStore'
 import { cn } from '@/lib/utils'
 
 const navItems = [
-  { icon: LayoutDashboard, label: 'Dashboard', path: '/' },
+  { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },
   { icon: Map, label: 'Journey', path: '/journey' },
   { icon: Heart, label: 'Check-in', path: '/checkin' },
   { icon: BookOpen, label: 'Resources', path: '/resources' },
@@ -26,10 +26,13 @@ export default function Navbar() {
 
   return (
     <>
-      <header className="bg-white border-b border-brand-border px-6 py-4 flex items-center justify-between md:hidden sticky top-0 z-30">
-        <h1 className="font-heading font-bold text-brand-text text-lg tracking-tight">
-          unmap
-        </h1>
+      <header className="bg-white border-b border-brand-border px-4 py-3 flex items-center justify-between md:hidden sticky top-0 z-30">
+        <div className="flex items-center gap-2">
+          <img src="/Unmap Logo.png" alt="Unmap" className="h-8 w-8 rounded-full object-cover" />
+          <h1 className="font-heading font-bold text-brand-text text-base tracking-tight">
+            unmap
+          </h1>
+        </div>
         <button
           onClick={() => setMenuOpen(!menuOpen)}
           className="text-brand-muted p-1 rounded-lg hover:bg-brand-surface transition-colors"
@@ -51,7 +54,7 @@ export default function Navbar() {
               <NavLink
                 key={path}
                 to={path}
-                end={path === '/'}
+                end={path === '/dashboard'}
                 onClick={() => setMenuOpen(false)}
                 className={({ isActive }) =>
                   cn(
