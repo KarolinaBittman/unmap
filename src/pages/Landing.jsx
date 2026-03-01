@@ -59,8 +59,8 @@ export default function Landing() {
 
       {/* ── NAVBAR ─────────────────────────────────────────────── */}
       <nav
-        className="sticky top-0 z-50 flex items-center justify-between px-6 py-4 md:px-12"
-        style={{ background: 'rgba(255,255,255,0.75)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', borderBottom: '1px solid rgba(0,0,0,0.06)' }}
+        className="flex items-center justify-between px-6 py-4 md:px-12"
+        style={{ position: 'sticky', top: 0, zIndex: 50, background: 'rgba(255,255,255,0.20)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', borderBottom: '1px solid rgba(0,0,0,0.06)' }}
       >
         <div className="flex items-center gap-2.5">
           <img
@@ -261,9 +261,9 @@ export default function Landing() {
         <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2.5">
             <img
-              src="/Unmap Logo.png"
+              src="/icon.png"
               alt="Unmap"
-              className="h-8 w-8 rounded-full object-cover"
+              className="h-8 w-8 object-contain"
             />
             <div>
               <p className="font-heading font-bold text-brand-text text-sm">unmap</p>
