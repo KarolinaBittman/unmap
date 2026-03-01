@@ -1,5 +1,6 @@
 import { useRef } from 'react'
 import { useNavigate, Navigate } from 'react-router-dom'
+import { ChevronDown } from 'lucide-react'
 import { useUserStore } from '@/store/userStore'
 import PathBackground from '@/components/PathBackground'
 
@@ -110,9 +111,21 @@ export default function Landing() {
           </p>
         </div>
 
-        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce opacity-40">
-          <div className="w-px h-8 bg-brand-muted rounded-full mx-auto" />
-        </div>
+        {/* Scroll chevron — custom bounce so we can control amplitude */}
+        <button
+          onClick={scrollToHow}
+          aria-label="Scroll down"
+          className="absolute bottom-10 left-1/2 -translate-x-1/2 focus:outline-none"
+          style={{ animation: 'chevronBounce 1.5s ease-in-out infinite' }}
+        >
+          <ChevronDown size={32} color="#2DD4BF" strokeWidth={2} />
+        </button>
+        <style>{`
+          @keyframes chevronBounce {
+            0%, 100% { transform: translateX(-50%) translateY(0px); }
+            50%       { transform: translateX(-50%) translateY(10px); }
+          }
+        `}</style>
       </section>
 
       {/* ── HOW IT WORKS ─────────────────────────────────────────
